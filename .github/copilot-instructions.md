@@ -43,6 +43,7 @@ Antes de generar lógica de negocio, ten en cuenta estas reglas fundamentales:
 - **Inmutabilidad:** Favorece el uso de objetos inmutables en el dominio donde sea posible.
 - **Validación Fail-Fast:** Valida los datos de entrada en los Controllers (Infraestructura) devolviendo un error HTTP 400 antes de que lleguen a los Casos de Uso.
 - **Mapeo Claro:** Nunca filtres entidades JPA directamente hacia las respuestas de la API. Usa mapeadores para transformar `Dominio -> DTO` y `JPA Entity -> Dominio`.
+- **Simplicidad sobre Abstracción:** No crees interfaces innecesarias (ej. Inbound Ports o Command Objects) a menos que exista una justificación concreta como múltiples implementaciones o desacoplamiento real. Los casos de uso deben ser clases directas con métodos que reciban parámetros simples. Las únicas interfaces obligatorias son los puertos de salida (Outbound Ports) hacia infraestructura, donde la inversión de dependencias es necesaria.
 
 ## 7. Instrucciones de Interacción
 - Al generar código, indica claramente a qué capa (Domain, Application, Infrastructure) pertenece el archivo.

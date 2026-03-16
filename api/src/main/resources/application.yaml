@@ -1,0 +1,15 @@
+spring:
+  datasource:
+    url: jdbc:postgresql://localhost:5432/cutclub
+    username: ${DB_USERNAME:cutclub}
+    password: ${DB_PASSWORD:cutclub}
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    open-in-view: false
+  flyway:
+    enabled: true
+    locations: classpath:db/migration
+  security:
+    filter:
+      dispatcher-types: request
