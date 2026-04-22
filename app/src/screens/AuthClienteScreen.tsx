@@ -11,13 +11,15 @@ import {
   ScrollView,
   Animated,
 } from 'react-native';
-import { ArrowLeft, ArrowRight } from 'lucide-react-native';
-import { postCliente } from '../services/clientesApi';
+import { User, Phone, Lock, ArrowRight, Eye, EyeOff } from 'lucide-react-native';
+import { loginCliente, registroCliente } from '../services/clientesApi';
 import { colors, spacing, radius, fonts, shadows } from '../styles/theme';
 import PhoneInput, { buildFullPhone } from '../components/PhoneInput';
 
+type AuthMode = 'login' | 'registro';
+
 /* ─── Toast ─── */
-function Toast({ message, type, onHide }: { message: string; type: 'success' | 'error'; onHide: () => void }) {
+function Toast({ message, type, onHide }: { message: string; type: 'success' | 'error' | 'info'; onHide: () => void }) {
   const opacity = useRef(new Animated.Value(0)).current;
   const translateY = useRef(new Animated.Value(-10)).current;
 
@@ -29,14 +31,24 @@ function Toast({ message, type, onHide }: { message: string; type: 'success' | '
 
     const timer = setTimeout(() => {
       Animated.timing(opacity, { toValue: 0, duration: 200, useNativeDriver: true }).start(onHide);
-    }, 2500);
+    }, 3000);
 
     return () => clearTimeout(timer);
   }, []);
 
+  const bg =
+    type === 'success' ? styles.toastSuccess :
+    type === 'info' ? styles.toastInfo :
+    styles.toastError;
+
+  const textColor =
+    type === 'success' ? styles.toastTextSuccess :
+    type === 'info' ? styles.toastTextInfo :
+    styles.toastTextError;
+
   return (
-    <Animated.View style={[styles.toast, type === 'success' ? styles.toastSuccess : styles.toastError, { opacity, transform: [{ translateY }] }]}>
-      <Text style={[styles.toastText, type === 'success' ? styles.toastTextSuccess : styles.toastTextError]}>{message}</Text>
+    <Animated.View style={[styles.toast, bg, { opacity, transform: [{ translateY }] }]}>
+      <Text style={[styles.toastText, textColor]}>{message}</Text>
     </Animated.View>
   );
 }
@@ -50,16 +62,21 @@ function EditorialInput({
   keyboardType,
   editable,
   autoCapitalize,
+  secureTextEntry,
+  icon,
 }: {
   label: string;
   value: string;
   onChangeText: (t: string) => void;
   placeholder: string;
-  keyboardType?: 'default' | 'phone-pad';
+  keyboardType?: 'default' | 'phone-pad' | 'email-address';
   editable: boolean;
   autoCapitalize?: 'none' | 'words';
+  secureTextEntry?: boolean;
+  icon?: React.ReactNode;
 }) {
   const [focused, setFocused] = useState(false);
+  const [hidePassword, setHidePassword] = useState(secureTextEntry ?? false);
 
   return (
     <View style={styles.field}>
@@ -76,26 +93,98 @@ function EditorialInput({
           editable={editable}
           onFocus={() => setFocused(true)}
           onBlur={() => setFocused(false)}
+          secureTextEntry={hidePassword}
         />
+        {secureTextEntry && (
+          <TouchableOpacity onPress={() => setHidePassword(!hidePassword)} activeOpacity={0.7} style={styles.eyeBtn}>
+            {hidePassword
+              ? <EyeOff size={18} color={colors.outline + '80'} strokeWidth={1.5} />
+              : <Eye size={18} color={colors.primary} strokeWidth={1.5} />}
+          </TouchableOpacity>
+        )}
+        {icon && <View style={styles.fieldIconWrap}>{icon}</View>}
       </View>
     </View>
   );
 }
 
-interface RegistroClienteScreenProps {
-  onBack?: () => void;
+interface AuthClienteScreenProps {
+  initialMode?: AuthMode;
+  onAuthSuccess: (clienteId: string) => void;
+  onSwitchMode?: (mode: AuthMode) => void;
 }
 
-export default function RegistroClienteScreen({ onBack }: RegistroClienteScreenProps) {
+export default function AuthClienteScreen({ initialMode = 'login', onAuthSuccess, onSwitchMode }: AuthClienteScreenProps) {
+  const [mode, setMode] = useState<AuthMode>(initialMode);
   const [nombre, setNombre] = useState('');
   const [telefono, setTelefono] = useState('');
   const [phoneDial, setPhoneDial] = useState('54');
+  const [contrasena, setContrasena] = useState('');
   const [isLoading, setIsLoading] = useState(false);
-  const [toast, setToast] = useState<{ message: string; type: 'success' | 'error' } | null>(null);
+  const [toast, setToast] = useState<{ message: string; type: 'success' | 'error' | 'info' } | null>(null);
 
-  const handleGuardar = async () => {
+  const fadeAnim = useRef(new Animated.Value(1)).current;
+  const slideAnim = useRef(new Animated.Value(0)).current;
+
+  const resetForm = () => {
+    setNombre('');
+    setTelefono('');
+    setPhoneDial('54');
+    setContrasena('');
     setToast(null);
+  };
 
+  const switchMode = (newMode: AuthMode) => {
+    if (newMode === mode) return;
+    const direction = newMode === 'registro' ? 1 : -1;
+
+    Animated.parallel([
+      Animated.timing(fadeAnim, { toValue: 0, duration: 150, useNativeDriver: true }),
+      Animated.timing(slideAnim, { toValue: direction * 20, duration: 150, useNativeDriver: true }),
+    ]).start(() => {
+      resetForm();
+      setMode(newMode);
+      onSwitchMode?.(newMode);
+      slideAnim.setValue(-direction * 20);
+      Animated.parallel([
+        Animated.timing(fadeAnim, { toValue: 1, duration: 200, useNativeDriver: true }),
+        Animated.timing(slideAnim, { toValue: 0, duration: 200, useNativeDriver: true }),
+      ]).start();
+    });
+  };
+
+  const handleLogin = async () => {
+    setToast(null);
+    if (!telefono.trim()) {
+      setToast({ message: 'Ingresa tu número de teléfono', type: 'error' });
+      return;
+    }
+    if (!contrasena) {
+      setToast({ message: 'Ingresa tu contraseña', type: 'error' });
+      return;
+    }
+
+    setIsLoading(true);
+    try {
+      const cliente = await loginCliente(telefono.trim(), contrasena);
+      setToast({ message: `Bienvenido, ${cliente.nombre}`, type: 'success' });
+      setTimeout(() => onAuthSuccess(cliente.clienteId), 600);
+    } catch (err: any) {
+      const status = err?.response?.status;
+      if (status === 404) {
+        setToast({ message: 'No encontramos una cuenta con ese teléfono. ¿Querés crear una?', type: 'info' });
+      } else if (status === 401) {
+        setToast({ message: 'Contraseña incorrecta', type: 'error' });
+      } else {
+        setToast({ message: 'Error al iniciar sesión', type: 'error' });
+      }
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleRegistro = async () => {
+    setToast(null);
     if (!nombre.trim()) {
       setToast({ message: 'El nombre es obligatorio', type: 'error' });
       return;
@@ -104,20 +193,32 @@ export default function RegistroClienteScreen({ onBack }: RegistroClienteScreenP
       setToast({ message: 'El teléfono es obligatorio', type: 'error' });
       return;
     }
+    if (!contrasena || contrasena.length < 4) {
+      setToast({ message: 'La contraseña debe tener al menos 4 caracteres', type: 'error' });
+      return;
+    }
 
     setIsLoading(true);
     try {
-      await postCliente(nombre.trim(), buildFullPhone(phoneDial, telefono));
-      setNombre('');
-      setTelefono('');
-      setPhoneDial('54');
-      setToast({ message: 'Cliente registrado correctamente', type: 'success' });
+      const cliente = await registroCliente(nombre.trim(), buildFullPhone(phoneDial, telefono), contrasena);
+      setToast({ message: '¡Cuenta creada! Bienvenido al club', type: 'success' });
+      setTimeout(() => onAuthSuccess(cliente.clienteId), 600);
     } catch (err: any) {
       const status = err?.response?.status;
-      if (status === 409 || status === 400) {
-        setToast({ message: 'Ese teléfono ya está registrado', type: 'error' });
+      if (status === 409) {
+        setToast({
+          message: 'Este teléfono ya tiene cuenta. Tu historial fue vinculado automáticamente.',
+          type: 'info',
+        });
+        // Intentar login automático para vincular
+        try {
+          const cliente = await loginCliente(telefono.trim(), contrasena);
+          setTimeout(() => onAuthSuccess(cliente.clienteId), 1500);
+        } catch {
+          // Si falla el login automático, que el usuario intente manualmente
+        }
       } else {
-        setToast({ message: 'Error al registrar cliente', type: 'error' });
+        setToast({ message: 'Error al crear la cuenta', type: 'error' });
       }
     } finally {
       setIsLoading(false);
@@ -139,55 +240,75 @@ export default function RegistroClienteScreen({ onBack }: RegistroClienteScreenP
           keyboardShouldPersistTaps="handled"
           showsVerticalScrollIndicator={false}
         >
-          {/* ── Navigation ── */}
-          {onBack && (
-            <TouchableOpacity style={styles.navBtn} onPress={onBack} activeOpacity={0.7}>
-              <View style={styles.navBtnInner}>
-                <ArrowLeft size={16} color={colors.onSurface} strokeWidth={1.5} />
-                <Text style={styles.navBtnText}>Volver</Text>
-              </View>
-            </TouchableOpacity>
-          )}
-
           {/* ════════════════════════════════════════
-              EDITORIAL HEADER
+              COMPACT HEADER
              ════════════════════════════════════════ */}
-          <View style={styles.editorialHeader}>
-            <Text style={styles.headlineWhite}>{'Registrar'}</Text>
-            <Text style={styles.headlinePrimary}>{'Nuevo Cliente'}</Text>
-          </View>
+          <Animated.View style={[styles.editorialHeader, { opacity: fadeAnim, transform: [{ translateX: slideAnim }] }]}>
+            <Text style={styles.eyebrow}>
+              {mode === 'login' ? 'Bienvenido de vuelta' : 'Nuevo miembro'}
+            </Text>
+            <Text style={styles.headlineWhite}>
+              {mode === 'login' ? 'Ingresá con tu' : 'Completá tus'}
+            </Text>
+            <Text style={styles.headlinePrimary}>
+              {mode === 'login' ? 'Teléfono' : 'Datos'}
+            </Text>
+          </Animated.View>
 
           {/* ════════════════════════════════════════
-              FORM — editorial fields, no card wrapper
+              FORM — editorial fields
              ════════════════════════════════════════ */}
           <View style={styles.formContainer}>
-            {/* Subtle depth halo */}
             <View style={styles.formHalo} />
 
-            <View style={styles.formFields}>
-              <EditorialInput
-                label="Nombre completo del cliente"
-                value={nombre}
-                onChangeText={setNombre}
-                placeholder=""
-                autoCapitalize="words"
-                editable={!isLoading}
-              />
+            <Animated.View style={[styles.formFields, { opacity: fadeAnim, transform: [{ translateX: slideAnim }] }]}>
+              {mode === 'registro' && (
+                <EditorialInput
+                  label="Nombre completo"
+                  value={nombre}
+                  onChangeText={setNombre}
+                  placeholder=""
+                  autoCapitalize="words"
+                  editable={!isLoading}
+                  icon={<User size={18} color={colors.outline + '4D'} strokeWidth={1.5} />}
+                />
+              )}
 
-              <PhoneInput
-                label="Numero de telefono"
-                localNumber={telefono}
-                onChangeLocalNumber={setTelefono}
-                countryDial={phoneDial}
-                onChangeCountryDial={setPhoneDial}
+              {mode === 'registro' ? (
+                <PhoneInput
+                  label="Número de teléfono"
+                  localNumber={telefono}
+                  onChangeLocalNumber={setTelefono}
+                  countryDial={phoneDial}
+                  onChangeCountryDial={setPhoneDial}
+                  editable={!isLoading}
+                />
+              ) : (
+                <EditorialInput
+                  label="Número de teléfono"
+                  value={telefono}
+                  onChangeText={setTelefono}
+                  placeholder="280 456 7890"
+                  keyboardType="phone-pad"
+                  editable={!isLoading}
+                  icon={<Phone size={18} color={colors.outline + '4D'} strokeWidth={1.5} />}
+                />
+              )}
+
+              <EditorialInput
+                label="Contraseña"
+                value={contrasena}
+                onChangeText={setContrasena}
+                placeholder="Tu contraseña"
                 editable={!isLoading}
+                secureTextEntry
               />
 
               {/* Primary CTA */}
               <View style={styles.ctaSection}>
                 <TouchableOpacity
                   style={[styles.ctaButton, isLoading && styles.ctaButtonDisabled]}
-                  onPress={handleGuardar}
+                  onPress={mode === 'login' ? handleLogin : handleRegistro}
                   disabled={isLoading}
                   activeOpacity={0.84}
                 >
@@ -195,13 +316,31 @@ export default function RegistroClienteScreen({ onBack }: RegistroClienteScreenP
                     <ActivityIndicator color={colors.onPrimaryContainer} />
                   ) : (
                     <View style={styles.ctaInner}>
-                      <Text style={styles.ctaText}>Registrar</Text>
+                      <Text style={styles.ctaText}>
+                        {mode === 'login' ? 'Ingresar' : 'Crear cuenta'}
+                      </Text>
                       <ArrowRight size={20} color={colors.onPrimaryContainer} strokeWidth={1.5} />
                     </View>
                   )}
                 </TouchableOpacity>
               </View>
-            </View>
+
+              {/* Switch mode link */}
+              <TouchableOpacity
+                style={styles.switchLink}
+                onPress={() => switchMode(mode === 'login' ? 'registro' : 'login')}
+                activeOpacity={0.7}
+              >
+                <Text style={styles.switchText}>
+                  {mode === 'login'
+                    ? '¿No tenés cuenta? '
+                    : '¿Ya tenés cuenta? '}
+                </Text>
+                <Text style={styles.switchAccent}>
+                  {mode === 'login' ? 'Crear una' : 'Iniciar sesión'}
+                </Text>
+              </TouchableOpacity>
+            </Animated.View>
           </View>
         </ScrollView>
       </KeyboardAvoidingView>
@@ -215,8 +354,8 @@ export default function RegistroClienteScreen({ onBack }: RegistroClienteScreenP
 }
 
 /* ═══════════════════════════════════════════════════
-   Styles — Dark Barber Editorial / Registration
-   Replicates code.html editorial form per DESIGN.md
+   Styles — Dark Barber Editorial / Auth Screen
+   Follows DESIGN.md system & existing screen patterns
    ═══════════════════════════════════════════════════ */
 
 const styles = StyleSheet.create({
@@ -229,28 +368,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: spacing.xl,
     paddingTop: spacing['6'],
     paddingBottom: spacing['6'] * 2,
-    gap: spacing['6'],
-  },
-
-  /* ── Navigation ── */
-  navBtn: {
-    alignSelf: 'flex-start',
-    paddingVertical: spacing.sm,
-    paddingHorizontal: spacing.base,
-    borderRadius: radius.md,
-    backgroundColor: 'transparent',
-    borderWidth: 1,
-    borderColor: colors.ghostBorder,
-  },
-  navBtnInner: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: spacing.xs,
-  },
-  navBtnText: {
-    color: colors.onSurface,
-    fontSize: fonts.bodyMd,
-    fontFamily: fonts.familyBodySemiBold,
+    gap: spacing.xxl,
   },
 
   /* ── Editorial Header ── */
@@ -279,13 +397,6 @@ const styles = StyleSheet.create({
     letterSpacing: -1.5,
     lineHeight: fonts.displayMd * 0.95,
     marginBottom: spacing.base,
-  },
-  headerSub: {
-    fontSize: fonts.bodyLg,
-    fontFamily: fonts.familyBody,
-    lineHeight: 24,
-    color: colors.onSurfaceVariant,
-    maxWidth: '80%',
   },
 
   /* ── Form Container ── */
@@ -324,17 +435,27 @@ const styles = StyleSheet.create({
   fieldInputWrap: {
     borderBottomWidth: 1,
     borderBottomColor: colors.ghostBorder,
+    flexDirection: 'row',
+    alignItems: 'center',
   },
   fieldInputWrapFocused: {
     borderBottomColor: colors.primaryContainer,
   },
   fieldInput: {
+    flex: 1,
     paddingVertical: spacing.base,
     paddingHorizontal: 0,
     fontSize: fonts.titleMd,
     fontFamily: fonts.familyBodySemiBold,
     color: colors.onSurface,
     letterSpacing: -0.3,
+  },
+  fieldIconWrap: {
+    paddingLeft: spacing.sm,
+  },
+  eyeBtn: {
+    paddingHorizontal: spacing.sm,
+    paddingVertical: spacing.xs,
   },
 
   /* ── CTA ── */
@@ -378,6 +499,23 @@ const styles = StyleSheet.create({
     textAlign: 'center',
   },
 
+  /* ── Switch Mode Link ── */
+  switchLink: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    paddingVertical: spacing.sm,
+  },
+  switchText: {
+    fontSize: fonts.bodyMd,
+    fontFamily: fonts.familyBody,
+    color: colors.onSurfaceVariant,
+  },
+  switchAccent: {
+    fontSize: fonts.bodyMd,
+    fontFamily: fonts.familyBodyBold,
+    color: colors.primary,
+  },
+
   /* ── Background Decor ── */
   bgDecor: {
     position: 'absolute',
@@ -417,15 +555,23 @@ const styles = StyleSheet.create({
     backgroundColor: colors.surfaceContainerHigh,
     borderColor: 'rgba(239, 68, 68, 0.35)',
   },
+  toastInfo: {
+    backgroundColor: '#0F1A2E',
+    borderColor: 'rgba(178, 197, 255, 0.35)',
+  },
   toastText: {
     color: colors.onSurface,
     fontSize: fonts.bodyMd,
     fontFamily: fonts.familyBodySemiBold,
+    textAlign: 'center',
   },
   toastTextSuccess: {
     color: '#EAF8EC',
   },
   toastTextError: {
     color: colors.onSurface,
+  },
+  toastTextInfo: {
+    color: colors.primaryFixedDim,
   },
 });
