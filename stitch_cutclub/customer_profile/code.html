@@ -1,0 +1,339 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Customer Profile | CUTCLUB</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Epilogue:ital,wght@0,400;0,600;0,700;0,900;1,900&amp;family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary-container": "#0040a1",
+                        "inverse-on-surface": "#565555",
+                        "outline-variant": "#484848",
+                        "tertiary-fixed": "#e3dbfd",
+                        "primary-dim": "#9db7ff",
+                        "on-primary-fixed": "#003992",
+                        "on-primary-fixed-variant": "#1d55c0",
+                        "on-tertiary-fixed": "#3f3a54",
+                        "surface-container-low": "#131313",
+                        "tertiary-dim": "#d5cdee",
+                        "on-error": "#490106",
+                        "secondary-fixed-dim": "#d5d4d8",
+                        "error-container": "#7f2927",
+                        "surface-container": "#191a1a",
+                        "surface-container-highest": "#252626",
+                        "on-background": "#e7e5e4",
+                        "on-secondary-fixed": "#3f3f43",
+                        "on-tertiary-container": "#524c68",
+                        "surface-bright": "#2c2c2c",
+                        "primary-fixed": "#dae2ff",
+                        "primary-fixed-dim": "#c6d3ff",
+                        "primary": "#b2c5ff",
+                        "on-secondary": "#1f2023",
+                        "secondary": "#9e9da1",
+                        "on-surface": "#e7e5e4",
+                        "surface-dim": "#0e0e0e",
+                        "inverse-surface": "#fcf9f8",
+                        "secondary-fixed": "#e4e2e6",
+                        "on-secondary-container": "#c0bec3",
+                        "on-tertiary": "#5a5570",
+                        "on-surface-variant": "#acabaa",
+                        "error-dim": "#bb5551",
+                        "error": "#ee7d77",
+                        "tertiary": "#f1ebff",
+                        "outline": "#767575",
+                        "on-error-container": "#ff9993",
+                        "surface": "#0e0e0e",
+                        "tertiary-container": "#e3dbfd",
+                        "background": "#0e0e0e",
+                        "on-primary-container": "#c0cfff",
+                        "secondary-dim": "#9e9da1",
+                        "surface-container-lowest": "#000000",
+                        "secondary-container": "#3b3b3f",
+                        "on-primary": "#003a93",
+                        "surface-container-high": "#1f2020",
+                        "surface-tint": "#b2c5ff",
+                        "on-secondary-fixed-variant": "#5b5b5f",
+                        "tertiary-fixed-dim": "#d5cdee",
+                        "surface-variant": "#252626",
+                        "on-tertiary-fixed-variant": "#5b5672",
+                        "inverse-primary": "#2359c3"
+                    },
+                    fontFamily: {
+                        "headline": ["Epilogue"],
+                        "body": ["Inter"],
+                        "label": ["Inter"]
+                    },
+                    borderRadius: { "DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px" },
+                },
+            },
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .hide-scrollbar::-webkit-scrollbar { display: none; }
+        .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+        .glass-card {
+            background: rgba(31, 32, 32, 0.6);
+            backdrop-filter: blur(12px);
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background text-on-surface font-body selection:bg-primary-container selection:text-on-primary-container">
+<!-- TopAppBar -->
+<nav class="bg-[#0e0e0e]/80 backdrop-blur-md border-b border-[#484848]/20 flex justify-between items-center px-6 h-20 w-full docked full-width top-0 sticky z-50">
+<div class="flex items-center gap-4">
+<button class="text-[#b2c5ff] scale-95 active:scale-90 transition-transform">
+<span class="material-symbols-outlined">menu</span>
+</button>
+<span class="text-[#e7e5e4] font-epilogue font-black italic tracking-tighter text-2xl">CUTCLUB</span>
+</div>
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-full bg-surface-container-high border border-outline-variant/20 overflow-hidden">
+<img class="w-full h-full object-cover" data-alt="Barber Profile Headshot" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAMbPr3FULD72G3FQi3M_W8PI02YmWp9Zv7nu1VwvolXNYNRgJOdvcGZnGGRxGFjhOvgtInoJEv-Wm91dBLh88TNFLmVVDVZCxJfB6J4eWmjPtcRZPsEnvSE626ZTos8hNa5TrSGL7y1gDOJKwsOnLA-KpuV74sU11Cds91Nhd14GP8btWuZmOBQw_bXOEI-IO27fzTQUKU0fIlkavL1Bks7nRuMptG7hIXb6835kCJEm2Zsu3YCLPVp8gC77JeHWf63eYpsqYWl20"/>
+</div>
+</div>
+</nav>
+<main class="max-w-7xl mx-auto px-6 py-12 pb-32">
+<!-- Hero Section: Editorial Layout -->
+<section class="grid grid-cols-1 md:grid-cols-12 gap-12 items-end mb-20">
+<div class="md:col-span-7">
+<span class="font-label text-primary tracking-[0.2em] uppercase text-xs font-bold mb-4 block">Client Profile</span>
+<h1 class="font-headline font-black text-6xl md:text-8xl tracking-tighter leading-none mb-6 text-on-surface">
+                    Julian<br/>Vargas
+                </h1>
+<div class="flex flex-wrap gap-8 items-center">
+<div>
+<p class="text-on-surface-variant font-label uppercase tracking-widest text-[10px] mb-1">Direct Line</p>
+<p class="font-headline font-bold text-xl text-on-surface">+1 (555) 012-8844</p>
+</div>
+<div class="h-10 w-[1px] bg-outline-variant/20 hidden sm:block"></div>
+<div>
+<p class="text-on-surface-variant font-label uppercase tracking-widest text-[10px] mb-1">Member Since</p>
+<p class="font-headline font-bold text-xl text-on-surface">OCT 2022</p>
+</div>
+</div>
+</div>
+<div class="md:col-span-5 relative">
+<!-- Loyalty Progress Ring (Premium Styling) -->
+<div class="bg-surface-container-low p-10 rounded-xl relative overflow-hidden group">
+<!-- Subtle Glow -->
+<div class="absolute -top-24 -right-24 w-64 h-64 bg-primary/5 blur-[100px] rounded-full"></div>
+<div class="relative z-10 flex flex-col items-center">
+<div class="relative w-48 h-48 flex items-center justify-center">
+<!-- SVG Progress -->
+<svg class="w-full h-full -rotate-90">
+<circle class="text-outline-variant/10" cx="96" cy="96" fill="transparent" r="88" stroke="currentColor" stroke-width="4"></circle>
+<circle class="text-primary" cx="96" cy="96" fill="transparent" r="88" stroke="currentColor" stroke-dasharray="552.92" stroke-dashoffset="138.23" stroke-width="8"></circle>
+</svg>
+<div class="absolute inset-0 flex flex-col items-center justify-center">
+<span class="font-headline font-black text-4xl text-on-surface">75%</span>
+<span class="font-label text-[10px] text-on-surface-variant tracking-widest uppercase">To VIP Tier</span>
+</div>
+</div>
+<div class="mt-8 text-center">
+<p class="font-headline font-bold text-lg text-primary mb-1">CLUB CODE: JV-8844</p>
+<p class="text-on-surface-variant text-sm">2 cuts away from complimentary service</p>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- Bento Grid: Benefits & Last Cut -->
+<div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+<!-- Benefits Section -->
+<div class="md:col-span-2 bg-surface-container-low p-8 rounded-xl flex flex-col">
+<div class="flex justify-between items-center mb-8">
+<h2 class="font-headline font-bold text-2xl tracking-tight">Active Rewards</h2>
+<span class="material-symbols-outlined text-primary" style="font-variation-settings: 'FILL' 1;">military_tech</span>
+</div>
+<div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+<!-- Reward Pill 1 -->
+<div class="bg-surface-container-high p-5 rounded-lg border border-outline-variant/10 flex items-center gap-4 transition-all hover:bg-surface-bright">
+<div class="w-12 h-12 rounded-full bg-primary-container/20 flex items-center justify-center text-primary">
+<span class="material-symbols-outlined">percent</span>
+</div>
+<div>
+<h3 class="font-bold text-on-surface">10% Off Next Cut</h3>
+<p class="text-xs text-on-surface-variant">Loyalty Milestone</p>
+</div>
+</div>
+<!-- Reward Pill 2 -->
+<div class="bg-surface-container-high p-5 rounded-lg border border-outline-variant/10 flex items-center gap-4 transition-all hover:bg-surface-bright">
+<div class="w-12 h-12 rounded-full bg-primary-container/20 flex items-center justify-center text-primary">
+<span class="material-symbols-outlined">coffee</span>
+</div>
+<div>
+<h3 class="font-bold text-on-surface">Free Espresso</h3>
+<p class="text-xs text-on-surface-variant">Arrival Benefit</p>
+</div>
+</div>
+<!-- Reward Pill 3 -->
+<div class="bg-surface-container-high p-5 rounded-lg border border-outline-variant/10 flex items-center gap-4 transition-all hover:bg-surface-bright">
+<div class="w-12 h-12 rounded-full bg-primary-container/20 flex items-center justify-center text-primary">
+<span class="material-symbols-outlined">brush</span>
+</div>
+<div>
+<h3 class="font-bold text-on-surface">Product Trial</h3>
+<p class="text-xs text-on-surface-variant">VIP Selection</p>
+</div>
+</div>
+<!-- Reward Pill 4 (Locked) -->
+<div class="bg-surface-container-lowest/40 p-5 rounded-lg border border-outline-variant/5 flex items-center gap-4 opacity-50">
+<div class="w-12 h-12 rounded-full bg-outline-variant/20 flex items-center justify-center text-on-surface-variant">
+<span class="material-symbols-outlined">lock</span>
+</div>
+<div>
+<h3 class="font-bold text-on-surface-variant">Gold Card Status</h3>
+<p class="text-xs text-on-surface-variant">Locked</p>
+</div>
+</div>
+</div>
+</div>
+<!-- Last Cut Section -->
+<div class="bg-primary-container text-on-primary-container p-8 rounded-xl flex flex-col justify-between relative overflow-hidden">
+<!-- Aesthetic Detail -->
+<div class="absolute top-0 right-0 p-4 opacity-10">
+<span class="material-symbols-outlined text-[120px]">content_cut</span>
+</div>
+<div class="relative z-10">
+<h2 class="font-headline font-bold text-2xl tracking-tight mb-8">Latest Visit</h2>
+<div class="space-y-6">
+<div>
+<p class="font-label uppercase tracking-widest text-[10px] opacity-70 mb-1">Service</p>
+<p class="font-headline font-bold text-xl">The Executive Cut</p>
+</div>
+<div class="flex justify-between items-end">
+<div>
+<p class="font-label uppercase tracking-widest text-[10px] opacity-70 mb-1">Barber</p>
+<p class="font-bold">Alex Cutwell</p>
+</div>
+<div class="text-right">
+<p class="font-label uppercase tracking-widest text-[10px] opacity-70 mb-1">Date</p>
+<p class="font-bold">May 14, 2024</p>
+</div>
+</div>
+</div>
+</div>
+<div class="relative z-10 pt-8 mt-8 border-t border-on-primary-container/20 flex justify-between items-center">
+<p class="font-label uppercase tracking-widest text-xs font-bold">Total Paid</p>
+<p class="font-headline font-black text-3xl">$85.00</p>
+</div>
+</div>
+</div>
+<!-- Appointment History (Editorial List) -->
+<section class="mt-20">
+<h2 class="font-headline font-bold text-3xl tracking-tight mb-10 text-on-surface">Service Timeline</h2>
+<div class="space-y-4">
+<!-- Visit Item 1 -->
+<div class="group bg-surface-container-low hover:bg-surface-container-high transition-colors p-6 rounded-xl flex flex-col md:flex-row md:items-center justify-between gap-6">
+<div class="flex items-center gap-6">
+<div class="w-14 h-14 bg-surface-container-highest rounded-lg flex items-center justify-center font-headline font-black text-on-surface-variant">
+                            04/12
+                        </div>
+<div>
+<h4 class="font-bold text-lg text-on-surface">Skin Fade + Beard Sculpture</h4>
+<p class="text-sm text-on-surface-variant">Maintained by Julian R.</p>
+</div>
+</div>
+<div class="flex items-center gap-8 md:text-right">
+<div>
+<p class="font-label text-[10px] text-on-surface-variant tracking-widest uppercase">Price</p>
+<p class="font-bold text-on-surface">$110.00</p>
+</div>
+<div class="h-8 w-[1px] bg-outline-variant/20"></div>
+<button class="w-12 h-12 rounded-lg bg-surface-container-highest text-on-surface flex items-center justify-center group-hover:bg-primary group-hover:text-on-primary transition-all">
+<span class="material-symbols-outlined">receipt_long</span>
+</button>
+</div>
+</div>
+<!-- Visit Item 2 -->
+<div class="group bg-surface-container-low hover:bg-surface-container-high transition-colors p-6 rounded-xl flex flex-col md:flex-row md:items-center justify-between gap-6">
+<div class="flex items-center gap-6">
+<div class="w-14 h-14 bg-surface-container-highest rounded-lg flex items-center justify-center font-headline font-black text-on-surface-variant">
+                            03/15
+                        </div>
+<div>
+<h4 class="font-bold text-lg text-on-surface">The Executive Cut</h4>
+<p class="text-sm text-on-surface-variant">Maintained by Alex C.</p>
+</div>
+</div>
+<div class="flex items-center gap-8 md:text-right">
+<div>
+<p class="font-label text-[10px] text-on-surface-variant tracking-widest uppercase">Price</p>
+<p class="font-bold text-on-surface">$85.00</p>
+</div>
+<div class="h-8 w-[1px] bg-outline-variant/20"></div>
+<button class="w-12 h-12 rounded-lg bg-surface-container-highest text-on-surface flex items-center justify-center group-hover:bg-primary group-hover:text-on-primary transition-all">
+<span class="material-symbols-outlined">receipt_long</span>
+</button>
+</div>
+</div>
+<!-- Visit Item 3 -->
+<div class="group bg-surface-container-low hover:bg-surface-container-high transition-colors p-6 rounded-xl flex flex-col md:flex-row md:items-center justify-between gap-6">
+<div class="flex items-center gap-6">
+<div class="w-14 h-14 bg-surface-container-highest rounded-lg flex items-center justify-center font-headline font-black text-on-surface-variant">
+                            02/08
+                        </div>
+<div>
+<h4 class="font-bold text-lg text-on-surface">Hot Towel Shave</h4>
+<p class="text-sm text-on-surface-variant">Maintained by Sarah W.</p>
+</div>
+</div>
+<div class="flex items-center gap-8 md:text-right">
+<div>
+<p class="font-label text-[10px] text-on-surface-variant tracking-widest uppercase">Price</p>
+<p class="font-bold text-on-surface">$60.00</p>
+</div>
+<div class="h-8 w-[1px] bg-outline-variant/20"></div>
+<button class="w-12 h-12 rounded-lg bg-surface-container-highest text-on-surface flex items-center justify-center group-hover:bg-primary group-hover:text-on-primary transition-all">
+<span class="material-symbols-outlined">receipt_long</span>
+</button>
+</div>
+</div>
+</div>
+<div class="mt-10 flex justify-center">
+<button class="text-primary font-label uppercase tracking-widest text-xs font-bold py-4 px-8 border border-primary/20 rounded-lg hover:bg-primary/5 transition-all">
+                    View Full History
+                </button>
+</div>
+</section>
+</main>
+<!-- BottomNavBar (Mobile Only) -->
+<nav class="md:hidden bg-[#0e0e0e]/90 backdrop-blur-xl border-t border-[#484848]/20 shadow-[0px_-12px_24px_rgba(0,0,0,0.6)] fixed bottom-0 w-full z-50 rounded-t-xl flex justify-around items-center px-4 py-3 pb-safe">
+<a class="flex flex-col items-center justify-center text-[#acabaa] px-4 py-2 hover:bg-[#131313] transition-all" href="#">
+<span class="material-symbols-outlined mb-1">storefront</span>
+<span class="font-inter font-medium text-[10px] tracking-[0.05em] uppercase">SHOP</span>
+</a>
+<a class="flex flex-col items-center justify-center text-[#b2c5ff] bg-[#0048B3]/10 rounded-xl px-4 py-2 hover:bg-[#131313] transition-all" href="#">
+<span class="material-symbols-outlined mb-1" style="font-variation-settings: 'FILL' 1;">groups</span>
+<span class="font-inter font-medium text-[10px] tracking-[0.05em] uppercase">CLIENTS</span>
+</a>
+<a class="flex flex-col items-center justify-center text-[#acabaa] px-4 py-2 hover:bg-[#131313] transition-all" href="#">
+<span class="material-symbols-outlined mb-1">event_available</span>
+<span class="font-inter font-medium text-[10px] tracking-[0.05em] uppercase">BOOKINGS</span>
+</a>
+<a class="flex flex-col items-center justify-center text-[#acabaa] px-4 py-2 hover:bg-[#131313] transition-all" href="#">
+<span class="material-symbols-outlined mb-1">military_tech</span>
+<span class="font-inter font-medium text-[10px] tracking-[0.05em] uppercase">VIP</span>
+</a>
+</nav>
+<!-- Floating Action for Mobile Profile View: Book Next -->
+<button class="fixed bottom-24 right-6 w-14 h-14 bg-primary text-on-primary shadow-xl rounded-xl flex items-center justify-center z-40 active:scale-90 transition-transform md:hidden">
+<span class="material-symbols-outlined">calendar_add_on</span>
+</button>
+</body></html>

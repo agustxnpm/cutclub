@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>CUTCLUB | Client Directory</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Epilogue:ital,wght@0,400;0,600;0,700;0,900;1,900&amp;family=Inter:wght@400;500;600&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary-container": "#0040a1",
+                        "inverse-on-surface": "#565555",
+                        "outline-variant": "#484848",
+                        "tertiary-fixed": "#e3dbfd",
+                        "primary-dim": "#9db7ff",
+                        "on-primary-fixed": "#003992",
+                        "on-primary-fixed-variant": "#1d55c0",
+                        "on-tertiary-fixed": "#3f3a54",
+                        "surface-container-low": "#131313",
+                        "tertiary-dim": "#d5cdee",
+                        "on-error": "#490106",
+                        "secondary-fixed-dim": "#d5d4d8",
+                        "error-container": "#7f2927",
+                        "surface-container": "#191a1a",
+                        "surface-container-highest": "#252626",
+                        "on-background": "#e7e5e4",
+                        "on-secondary-fixed": "#3f3f43",
+                        "on-tertiary-container": "#524c68",
+                        "surface-bright": "#2c2c2c",
+                        "primary-fixed": "#dae2ff",
+                        "primary-fixed-dim": "#c6d3ff",
+                        "primary": "#b2c5ff",
+                        "on-secondary": "#1f2023",
+                        "secondary": "#9e9da1",
+                        "on-surface": "#e7e5e4",
+                        "surface-dim": "#0e0e0e",
+                        "inverse-surface": "#fcf9f8",
+                        "secondary-fixed": "#e4e2e6",
+                        "on-secondary-container": "#c0bec3",
+                        "on-tertiary": "#5a5570",
+                        "on-surface-variant": "#acabaa",
+                        "error-dim": "#bb5551",
+                        "error": "#ee7d77",
+                        "tertiary": "#f1ebff",
+                        "outline": "#767575",
+                        "on-error-container": "#ff9993",
+                        "surface": "#0e0e0e",
+                        "tertiary-container": "#e3dbfd",
+                        "background": "#0e0e0e",
+                        "on-primary-container": "#c0cfff",
+                        "secondary-dim": "#9e9da1",
+                        "surface-container-lowest": "#000000",
+                        "secondary-container": "#3b3b3f",
+                        "on-primary": "#003a93",
+                        "surface-container-high": "#1f2020",
+                        "surface-tint": "#b2c5ff",
+                        "on-secondary-fixed-variant": "#5b5b5f",
+                        "tertiary-fixed-dim": "#d5cdee",
+                        "surface-variant": "#252626",
+                        "on-tertiary-fixed-variant": "#5b5672",
+                        "inverse-primary": "#2359c3"
+                    },
+                    fontFamily: {
+                        "headline": ["Epilogue"],
+                        "body": ["Inter"],
+                        "label": ["Inter"]
+                    },
+                    borderRadius: { "DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px" },
+                },
+            },
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+        .container-shift { transition: all 0.3s ease-in-out; }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background text-on-surface font-body selection:bg-primary-container selection:text-on-primary-container">
+<!-- TopAppBar Shell -->
+<nav class="bg-[#0e0e0e]/80 backdrop-blur-md text-[#b2c5ff] border-b border-[#484848]/20 docked full-width top-0 sticky z-50 flex justify-between items-center px-6 h-20 w-full">
+<div class="flex items-center gap-4">
+<button class="scale-95 active:scale-90 transition-transform text-[#acabaa] hover:text-[#b2c5ff]">
+<span class="material-symbols-outlined" data-icon="menu">menu</span>
+</button>
+<span class="text-[#e7e5e4] font-epilogue font-black italic tracking-tighter text-2xl uppercase">CUTCLUB</span>
+</div>
+<div class="flex items-center gap-4">
+<div class="w-10 h-10 rounded-full bg-surface-container-high border border-outline-variant/20 overflow-hidden scale-95 active:scale-90 transition-transform cursor-pointer">
+<img alt="Barber Profile" class="w-full h-full object-cover" data-alt="Close up profile portrait of a stylish barber" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDmb9WmzWyHIPgW8xE0GxMm3_sSvLnm4PFN9uT-BRbn8s1VdPbI5BtgSLeReFVQWLR9v1Gt4A-42wAzegdsI37-4KQaP6HsGc8WToyLrAhDnyRJuDszqg718N0-DxC3mOLpX4HalFEbv_H0FJqK6ne2jH_fZ1wLoTAw2QNhcd9VIOlmdQhxNowReVYE58lDlDHVHQscjjAAhD5KGLnnswB3E6b4dRZ6FhnHoAIrX5FfJHhUFnb2wq66IBDvOAKJweeCiLeT_pKrs3o"/>
+</div>
+</div>
+</nav>
+<main class="max-w-7xl mx-auto px-6 pt-12 pb-32">
+<!-- Editorial Header Section -->
+<header class="mb-16">
+<div class="flex flex-col md:flex-row md:items-end justify-between gap-8">
+<div class="max-w-2xl">
+<h1 class="font-headline font-bold text-5xl md:text-7xl tracking-tighter text-on-surface mb-6 leading-none">
+                        CLIENT <br/><span class="text-primary italic">DIRECTORY</span>
+</h1>
+<p class="font-body text-lg text-on-surface-variant max-w-md leading-relaxed">
+                        Curate your elite clientele. Manage profiles, track loyalty milestones, and provide the modern atelier experience.
+                    </p>
+</div>
+<!-- Primary CTA - Prominent but Elegant -->
+<button class="bg-primary-container text-on-primary-container font-label font-bold uppercase tracking-[0.05em] px-8 py-5 rounded-xl flex items-center gap-3 scale-95 active:scale-90 transition-transform shadow-xl shadow-primary-container/20">
+<span class="material-symbols-outlined" data-icon="person_add">person_add</span>
+                    REGISTER NEW CLIENT
+                </button>
+</div>
+</header>
+<!-- Search & Filter Area - The "Protagonist" Search Bar -->
+<div class="relative mb-20 group">
+<div class="absolute inset-y-0 left-6 flex items-center pointer-events-none text-on-surface-variant group-focus-within:text-primary transition-colors">
+<span class="material-symbols-outlined" data-icon="search">search</span>
+</div>
+<input class="w-full bg-surface-container-lowest border-b-2 border-outline-variant/20 focus:border-primary py-8 pl-16 pr-6 font-headline font-semibold text-2xl tracking-tight text-on-surface placeholder:text-on-surface-variant/30 focus:outline-none transition-all focus:bg-surface-container-low/50" placeholder="SEARCH BY NAME, PHONE, OR STATUS..." type="text"/>
+<div class="absolute right-6 top-1/2 -translate-y-1/2 flex gap-4">
+<button class="text-on-surface-variant font-label font-medium uppercase text-xs tracking-widest border border-outline-variant/20 px-4 py-2 rounded-lg hover:bg-surface-container-high transition-all">Filter</button>
+<button class="text-on-surface-variant font-label font-medium uppercase text-xs tracking-widest border border-outline-variant/20 px-4 py-2 rounded-lg hover:bg-surface-container-high transition-all">Export</button>
+</div>
+</div>
+<!-- Client Grid - Bento-style inspiration -->
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+<!-- VIP Card Example -->
+<div class="bg-surface-container-high p-8 rounded-xl border border-surface-bright/20 shadow-[-12px_12px_24px_rgba(0,0,0,0.4)] group hover:border-primary/30 transition-all duration-300 flex flex-col justify-between h-[280px]">
+<div class="flex justify-between items-start">
+<div class="flex gap-4">
+<div class="w-14 h-14 rounded-lg overflow-hidden bg-surface-container-lowest flex-shrink-0">
+<img alt="Client" class="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all" data-alt="Portrait of a modern male client with a clean haircut" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDsDlKFhp4Ml0c8_6bDIuLt4_KFg9bDATZAC7pwBbvgJqbTZoHhpbdh6ifXiJ1d96ovhC3rLub4LRbNRLgTNLCph0KLd9D0oPoW7eW2OWJx9ICrSqq5EyAGDd2gqnIgIyjk9QBpjySvhbFHfJgOsNbZBalDis8lM5EPEucXA8YYpviNZtjqzkJNJSCUcD5RftrpTH5TZ7LbwjdLV3OBjZkrnGn3O0f5MVWZbjgbk8NDzmGgSaXk7KM420CgqxRaw3_k3JbuJP3UkNg"/>
+</div>
+<div>
+<h3 class="font-headline font-bold text-xl text-on-surface group-hover:text-primary transition-colors">Julian Sterling</h3>
+<p class="font-body text-sm text-on-surface-variant">+1 (555) 012-4492</p>
+</div>
+</div>
+<span class="bg-primary-container/20 text-primary font-label text-[10px] font-bold tracking-widest uppercase px-3 py-1 rounded-full border border-primary/20">VIP</span>
+</div>
+<div class="mt-auto">
+<div class="flex justify-between items-end mb-2">
+<span class="font-label text-[10px] text-on-surface-variant tracking-widest uppercase">Loyalty Progress</span>
+<span class="font-headline font-bold text-primary text-sm">8/10 Visits</span>
+</div>
+<div class="h-1.5 w-full bg-surface-container-lowest rounded-full overflow-hidden">
+<div class="h-full bg-primary rounded-full shadow-[0_0_12px_rgba(178,197,255,0.4)]" style="width: 80%"></div>
+</div>
+<p class="mt-4 text-[10px] text-on-surface-variant font-medium tracking-wide uppercase italic">Last Visit: Oct 24, 2023 — Signature Fade</p>
+</div>
+</div>
+<!-- Active Card Example -->
+<div class="bg-surface-container-high p-8 rounded-xl border border-surface-bright/20 shadow-[-12px_12px_24px_rgba(0,0,0,0.4)] group hover:border-primary/30 transition-all duration-300 flex flex-col justify-between h-[280px]">
+<div class="flex justify-between items-start">
+<div class="flex gap-4">
+<div class="w-14 h-14 rounded-lg overflow-hidden bg-surface-container-lowest flex-shrink-0">
+<img alt="Client" class="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all" data-alt="Portrait of a young male professional" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBtFZMsOQ8C3GFnwn9gLWRhAuUi6ZeQgY2uvuxSp2OkVRX503dpOYcW7-qWr0d4Yi_zSmZuQL1G-6Ge11aZT_UKOAM9qTocyk37cLqrEOTLDpOWVfUjYxewYpyQYdd-7sDPBPGsGsB4Dhx4WsUJFsxzElst43DCza3thWaBmdxeWt9tjKozmfAzskdjKXL0roU1pMjKrHOsOOMgnHgedDq7L4E9cmKCYP0fJZH-zvgjGVWlJDADDBdAVYAXYxxf1KplEVGX1OZoCJ8"/>
+</div>
+<div>
+<h3 class="font-headline font-bold text-xl text-on-surface group-hover:text-primary transition-colors">Marcus Chen</h3>
+<p class="font-body text-sm text-on-surface-variant">+1 (555) 882-1104</p>
+</div>
+</div>
+<span class="bg-secondary-container text-on-secondary-container font-label text-[10px] font-bold tracking-widest uppercase px-3 py-1 rounded-full border border-outline-variant/20">ACTIVE</span>
+</div>
+<div class="mt-auto">
+<div class="flex justify-between items-end mb-2">
+<span class="font-label text-[10px] text-on-surface-variant tracking-widest uppercase">Loyalty Progress</span>
+<span class="font-headline font-bold text-on-surface text-sm">3/10 Visits</span>
+</div>
+<div class="h-1.5 w-full bg-surface-container-lowest rounded-full overflow-hidden">
+<div class="h-full bg-on-surface-variant/40 rounded-full" style="width: 30%"></div>
+</div>
+<p class="mt-4 text-[10px] text-on-surface-variant font-medium tracking-wide uppercase italic">Last Visit: Nov 12, 2023 — Beard Trim</p>
+</div>
+</div>
+<!-- Member Card Example -->
+<div class="bg-surface-container-high p-8 rounded-xl border border-surface-bright/20 shadow-[-12px_12px_24px_rgba(0,0,0,0.4)] group hover:border-primary/30 transition-all duration-300 flex flex-col justify-between h-[280px]">
+<div class="flex justify-between items-start">
+<div class="flex gap-4">
+<div class="w-14 h-14 rounded-lg overflow-hidden bg-surface-container-lowest flex-shrink-0">
+<img alt="Client" class="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all" data-alt="Portrait of a creative modern man" src="https://lh3.googleusercontent.com/aida-public/AB6AXuD4oMEjzHqC2VShPaQdUgOXOs3WHG_keXHLbI_dkELdl6rHUijrpv1xy-ajKafi8A7Nbt3FpGCMyGE10bA75Z8jCbV8su_azbM6tRISIcUxyRR0P46UIl1iEU8XpKwuIT2emT0iKOP9FYysCr9ioeZHym_OUO_FR4kYtqzCnn1VFHwYKKe8kegQxDVafvtE5EvE3bnSf0m1kLxFirHoX0iIvo0TBQHV1cm_vBDlBj15OJGHlUtVDRGHqIEcPc4zlmgx5wU4tfuIYJo"/>
+</div>
+<div>
+<h3 class="font-headline font-bold text-xl text-on-surface group-hover:text-primary transition-colors">Dominic Wright</h3>
+<p class="font-body text-sm text-on-surface-variant">+1 (555) 349-0012</p>
+</div>
+</div>
+<span class="bg-primary-container/20 text-primary font-label text-[10px] font-bold tracking-widest uppercase px-3 py-1 rounded-full border border-primary/20">VIP</span>
+</div>
+<div class="mt-auto">
+<div class="flex justify-between items-end mb-2">
+<span class="font-label text-[10px] text-on-surface-variant tracking-widest uppercase">Loyalty Progress</span>
+<span class="font-headline font-bold text-primary text-sm">9/10 Visits</span>
+</div>
+<div class="h-1.5 w-full bg-surface-container-lowest rounded-full overflow-hidden">
+<div class="h-full bg-primary rounded-full shadow-[0_0_12px_rgba(178,197,255,0.4)]" style="width: 90%"></div>
+</div>
+<p class="mt-4 text-[10px] text-on-surface-variant font-medium tracking-wide uppercase italic">Last Visit: Yesterday — Hot Towel Shave</p>
+</div>
+</div>
+<!-- Inactive Card Example -->
+<div class="bg-surface-container-high p-8 rounded-xl border border-surface-bright/20 shadow-[-12px_12px_24px_rgba(0,0,0,0.4)] group hover:border-primary/30 transition-all duration-300 flex flex-col justify-between h-[280px] opacity-80 hover:opacity-100">
+<div class="flex justify-between items-start">
+<div class="flex gap-4">
+<div class="w-14 h-14 rounded-lg overflow-hidden bg-surface-container-lowest flex-shrink-0">
+<img alt="Client" class="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all" data-alt="Portrait of a businessman" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAmjYkr0JPIGNCjTL3N0giAXFnM9Ynk_IUo9pptPQehhkwEl5CU32xkLh4_iiqJhLokCoafWNBU0mg2f_t6BXFiRikDfsCYo0R2wBnlVlbquzFLIWDYJCd9zs93QR44vVelloVISLo-Z1SRQHstlFTQgkl4SyEeTR2egwBeb73jt6B6H1T9NALJUiUfVLzX8cxYP7yrmjIrvWrj12ymy6ayuNiu3xUzugqvkPyKFJBIWWTHWx9-5Y5bNVgBuyf9ShQY_ERlUm36D84"/>
+</div>
+<div>
+<h3 class="font-headline font-bold text-xl text-on-surface group-hover:text-primary transition-colors">Silas Thorne</h3>
+<p class="font-body text-sm text-on-surface-variant">+1 (555) 201-9983</p>
+</div>
+</div>
+<span class="bg-surface-container text-on-surface-variant font-label text-[10px] font-bold tracking-widest uppercase px-3 py-1 rounded-full border border-outline-variant/10">INACTIVE</span>
+</div>
+<div class="mt-auto">
+<div class="flex justify-between items-end mb-2">
+<span class="font-label text-[10px] text-on-surface-variant tracking-widest uppercase">Loyalty Progress</span>
+<span class="font-headline font-bold text-on-surface-variant text-sm">1/10 Visits</span>
+</div>
+<div class="h-1.5 w-full bg-surface-container-lowest rounded-full overflow-hidden">
+<div class="h-full bg-on-surface-variant/20 rounded-full" style="width: 10%"></div>
+</div>
+<p class="mt-4 text-[10px] text-on-surface-variant font-medium tracking-wide uppercase italic">Last Visit: 6 Months Ago — Classic Cut</p>
+</div>
+</div>
+<!-- Add Card - Contextual Empty State style -->
+<div class="bg-surface-container-low p-8 rounded-xl border-2 border-dashed border-outline-variant/20 flex flex-col items-center justify-center h-[280px] group hover:border-primary/40 transition-all cursor-pointer">
+<div class="w-16 h-16 rounded-full bg-surface-container-high flex items-center justify-center text-primary group-hover:scale-110 transition-transform mb-4">
+<span class="material-symbols-outlined text-4xl" data-icon="add">add</span>
+</div>
+<span class="font-label font-bold text-xs tracking-widest uppercase text-on-surface-variant group-hover:text-primary">Add New Client</span>
+</div>
+</div>
+</main>
+<!-- BottomNavBar Shell (Mobile) -->
+<nav class="md:hidden bg-[#0e0e0e]/90 backdrop-blur-xl border-t border-[#484848]/20 shadow-[0px_-12px_24px_rgba(0,0,0,0.6)] fixed bottom-0 w-full z-50 rounded-t-xl flex justify-around items-center px-4 py-3 pb-safe">
+<a class="flex flex-col items-center justify-center text-[#acabaa] px-4 py-2 hover:bg-[#131313] transition-all Active: scale-95 duration-200" href="#">
+<span class="material-symbols-outlined" data-icon="storefront">storefront</span>
+<span class="font-inter font-medium text-[10px] tracking-[0.05em] uppercase mt-1">SHOP</span>
+</a>
+<a class="flex flex-col items-center justify-center text-[#b2c5ff] bg-[#0048B3]/10 rounded-xl px-4 py-2 hover:bg-[#131313] transition-all Active: scale-95 duration-200" href="#">
+<span class="material-symbols-outlined" data-icon="groups">groups</span>
+<span class="font-inter font-medium text-[10px] tracking-[0.05em] uppercase mt-1">CLIENTS</span>
+</a>
+<a class="flex flex-col items-center justify-center text-[#acabaa] px-4 py-2 hover:bg-[#131313] transition-all Active: scale-95 duration-200" href="#">
+<span class="material-symbols-outlined" data-icon="event_available">event_available</span>
+<span class="font-inter font-medium text-[10px] tracking-[0.05em] uppercase mt-1">BOOKINGS</span>
+</a>
+<a class="flex flex-col items-center justify-center text-[#acabaa] px-4 py-2 hover:bg-[#131313] transition-all Active: scale-95 duration-200" href="#">
+<span class="material-symbols-outlined" data-icon="military_tech">military_tech</span>
+<span class="font-inter font-medium text-[10px] tracking-[0.05em] uppercase mt-1">VIP</span>
+</a>
+</nav>
+<!-- Floating Action Button for Registering Client (Desktop Focus) -->
+<div class="hidden md:flex fixed bottom-12 right-12 z-40">
+<button class="w-16 h-16 bg-primary text-on-primary rounded-xl shadow-2xl shadow-primary/30 flex items-center justify-center scale-100 hover:scale-110 active:scale-90 transition-all group">
+<span class="material-symbols-outlined text-3xl" data-icon="person_add">person_add</span>
+<span class="absolute right-full mr-4 bg-surface-container-high px-4 py-2 rounded-lg text-xs font-label font-bold uppercase tracking-widest text-on-surface opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap border border-outline-variant/20">Add New Client</span>
+</button>
+</div>
+</body></html>
