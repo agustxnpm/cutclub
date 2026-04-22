@@ -13,7 +13,8 @@ public class ClienteMapper {
                 entity.getNombre(),
                 entity.getTelefono(),
                 entity.getCodigoReferido(),
-                entity.getContadorFidelidad()
+                entity.getContadorFidelidad(),
+                entity.getContrasenaHash()
         );
     }
 
@@ -23,7 +24,8 @@ public class ClienteMapper {
                 domain.getNombre(),
                 domain.getTelefono(),
                 domain.getCodigoReferido(),
-                domain.getContadorFidelidad()
+                domain.getContadorFidelidad(),
+                domain.getContrasenaHash()
         );
     }
 }

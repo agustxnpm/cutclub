@@ -31,4 +31,7 @@ public class ClienteJpaEntity {
 
     @Column(name = "contador_fidelidad", nullable = false)
     private Integer contadorFidelidad;
+
+    @Column(name = "contrasena_hash")
+    private String contrasenaHash;
 }

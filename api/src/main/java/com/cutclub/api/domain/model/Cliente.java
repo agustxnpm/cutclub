@@ -17,15 +17,17 @@ public class Cliente {
     private final String nombre;
     private final String telefono;
     private final String codigoReferido;
+    private final String contrasenaHash;
     private int contadorFidelidad;
 
     // Constructor privado — la creación se controla mediante factory methods
-    private Cliente(UUID id, String nombre, String telefono, String codigoReferido, int contadorFidelidad) {
+    private Cliente(UUID id, String nombre, String telefono, String codigoReferido, int contadorFidelidad, String contrasenaHash) {
         this.id = id;
         this.nombre = nombre;
         this.telefono = telefono;
         this.codigoReferido = codigoReferido;
         this.contadorFidelidad = contadorFidelidad;
+        this.contrasenaHash = contrasenaHash;
     }
 
     /**
@@ -33,15 +35,19 @@ public class Cliente {
      * El id se genera automáticamente y el contadorFidelidad inicia en 0.
      */
     public static Cliente crearNuevo(String nombre, String telefono, String codigoReferido) {
+        return crearNuevo(nombre, telefono, codigoReferido, null);
+    }
+
+    public static Cliente crearNuevo(String nombre, String telefono, String codigoReferido, String contrasenaHash) {
         validarCamposObligatorios(nombre, telefono, codigoReferido);
-        return new Cliente(UUID.randomUUID(), nombre, telefono, codigoReferido, 0);
+        return new Cliente(UUID.randomUUID(), nombre, telefono, codigoReferido, 0, contrasenaHash);
     }
 
     /**
      * Factory method para reconstruir un Cliente existente desde persistencia.
      * Permite restaurar el estado completo sin violar las reglas de creación.
      */
-    public static Cliente reconstruir(UUID id, String nombre, String telefono, String codigoReferido, int contadorFidelidad) {
+    public static Cliente reconstruir(UUID id, String nombre, String telefono, String codigoReferido, int contadorFidelidad, String contrasenaHash) {
         if (id == null) {
             throw new IllegalArgumentException("El id no puede ser nulo al reconstruir un Cliente");
         }
@@ -49,7 +55,7 @@ public class Cliente {
         if (contadorFidelidad < 0) {
             throw new IllegalArgumentException("El contador de fidelidad no puede ser negativo");
         }
-        return new Cliente(id, nombre, telefono, codigoReferido, contadorFidelidad);
+        return new Cliente(id, nombre, telefono, codigoReferido, contadorFidelidad, contrasenaHash);
     }
 
     private static void validarCamposObligatorios(String nombre, String telefono, String codigoReferido) {
@@ -82,5 +88,9 @@ public class Cliente {
 
     public int getContadorFidelidad() {
         return contadorFidelidad;
+    }
+
+    public String getContrasenaHash() {
+        return contrasenaHash;
     }
 }

@@ -1,6 +1,10 @@
 package com.cutclub.api.domain.port;
 
 import com.cutclub.api.domain.model.Cliente;
+import com.cutclub.api.domain.model.PerfilCliente;
+
+import java.util.List;
+import java.util.Optional;
 
 /**
  * Puerto de salida (Outbound Port) para la persistencia de clientes.
@@ -11,10 +15,13 @@ import com.cutclub.api.domain.model.Cliente;
  */
 public interface ClienteRepository {
 
-    /**
-     * Persiste un cliente en el almacenamiento.
-     *
-     * @param cliente el cliente a guardar
-     */
     void save(Cliente cliente);
+
+    List<Cliente> listarTodos();
+
+    List<Cliente> buscarPorNombreOTelefono(String query);
+
+    Optional<Cliente> buscarPorTelefono(String telefono);
+
+    Optional<PerfilCliente> obtenerPerfil(String clienteId);
 }
