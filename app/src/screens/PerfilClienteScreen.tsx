@@ -6,7 +6,6 @@ import {
   ActivityIndicator,
   ScrollView,
   StyleSheet,
-  Dimensions,
   Linking,
   Animated,
 } from 'react-native';
@@ -15,6 +14,8 @@ import { ArrowLeft, Star, Sparkles, Lock, Scissors } from 'lucide-react-native';
 import { META_CORTES_FIDELIDAD } from '../constants/fidelidad';
 import { obtenerPerfilCliente, PerfilClienteResponse } from '../services/clientesApi';
 import LoyaltyRing from '../components/LoyaltyRing';
+import RegistrarCorteSheet from './RegistrarCorteSheet';
+import { useRol } from '../context/RolContext';
 import { colors, spacing, fonts, radius, shadows } from '../styles/theme';
 
 interface PerfilClienteScreenProps {
@@ -23,10 +24,6 @@ interface PerfilClienteScreenProps {
 }
 
 /* ─── Static data for sections without backend support ─── */
-
-// TODO: Reemplazar con el rol real del usuario autenticado (desde contexto/auth)
-type UserRole = 'barbero' | 'cliente';
-const CURRENT_ROLE: UserRole = 'cliente'; // TODO: obtener del contexto de autenticación
 
 const MOCK_TIMELINE = [
   { id: '1', fecha: '14/05', servicio: 'Corte Ejecutivo', notas: 'Mantenimiento por Alex C.', precio: '$85.00' },
@@ -38,15 +35,21 @@ export default function PerfilClienteScreen({ clienteId, onBack }: PerfilCliente
   const [perfil, setPerfil] = useState<PerfilClienteResponse | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(false);
+  const [modalCorteVisible, setModalCorteVisible] = useState(false);
   const contactScale = useRef(new Animated.Value(1)).current;
+  const { rol } = useRol();
+
+  const cargarPerfil = () => {
+    setIsLoading(true);
+    setError(false);
+    obtenerPerfilCliente(clienteId)
+      .then((data) => setPerfil(data))
+      .catch(() => setError(true))
+      .finally(() => setIsLoading(false));
+  };
 
   useEffect(() => {
-    let cancelled = false;
-    obtenerPerfilCliente(clienteId)
-      .then((data) => { if (!cancelled) setPerfil(data); })
-      .catch(() => { if (!cancelled) setError(true); })
-      .finally(() => { if (!cancelled) setIsLoading(false); });
-    return () => { cancelled = true; };
+    cargarPerfil();
   }, [clienteId]);
 
   if (isLoading) {
@@ -93,7 +96,7 @@ export default function PerfilClienteScreen({ clienteId, onBack }: PerfilCliente
   };
 
   // TODO: Usar rol real del usuario autenticado
-  const isBarbero = CURRENT_ROLE === 'barbero';
+  const isBarbero = rol === 'barbero';
 
   return (
     <View style={styles.screen}>
@@ -133,6 +136,15 @@ export default function PerfilClienteScreen({ clienteId, onBack }: PerfilCliente
 
           {/* TODO: Mostrar solo cuando el rol sea 'barbero' (actualmente hardcodeado) */}
           {isBarbero && (
+            <View style={styles.barberóActions}>
+              <TouchableOpacity
+                style={styles.registrarCorteBtn}
+                activeOpacity={0.85}
+                onPress={() => setModalCorteVisible(true)}
+              >
+                <Text style={styles.registrarCorteBtnText}>REGISTRAR CORTE →</Text>
+              </TouchableOpacity>
+
             <Animated.View style={{ transform: [{ scale: contactScale }] }}>
               <TouchableOpacity
                 style={styles.contactarBtn}
@@ -145,6 +157,7 @@ export default function PerfilClienteScreen({ clienteId, onBack }: PerfilCliente
               <Text style={styles.contactarText}>CONTACTAR</Text>
               </TouchableOpacity>
             </Animated.View>
+            </View>
           )}
         </View>
 
@@ -221,20 +234,24 @@ export default function PerfilClienteScreen({ clienteId, onBack }: PerfilCliente
               <View style={styles.lastCutBody}>
                 <View style={styles.lastCutField}>
                   <Text style={styles.lastCutLabel}>SERVICIO</Text>
-                  <Text style={styles.lastCutValue}>{perfil.ultimoCorte.tipo ?? 'Corte'}</Text>
+                  <Text style={styles.lastCutValue}>{perfil.ultimoCorte.tipoCorte}</Text>
                 </View>
                 <View style={styles.lastCutFieldRow}>
                   <View style={styles.lastCutField}>
                     <Text style={styles.lastCutLabel}>FECHA</Text>
                     <Text style={styles.lastCutValueSm}>{formatFecha(perfil.ultimoCorte.fecha)}</Text>
                   </View>
-                </View>
-                {perfil.ultimoCorte.notas ? (
                   <View style={styles.lastCutField}>
-                    <Text style={styles.lastCutLabel}>NOTAS</Text>
-                    <Text style={styles.lastCutValueSm}>{perfil.ultimoCorte.notas}</Text>
+                    <Text style={styles.lastCutLabel}>PRECIO</Text>
+                    <Text style={styles.lastCutValueSm}>${perfil.ultimoCorte.precio.toFixed(2)}</Text>
                   </View>
-                ) : null}
+                </View>
+                {perfil.ultimoCorte.esGratis && (
+                  <View style={styles.lastCutField}>
+                    <Text style={styles.lastCutLabel}>TIPO</Text>
+                    <Text style={styles.lastCutValueSm}>Corte gratis</Text>
+                  </View>
+                )}
               </View>
             ) : (
               <Text style={styles.lastCutEmpty}>Sin cortes registrados.</Text>
@@ -274,6 +291,21 @@ export default function PerfilClienteScreen({ clienteId, onBack }: PerfilCliente
         </View>
 
       </ScrollView>
+
+      {perfil && (
+        <RegistrarCorteSheet
+          visible={modalCorteVisible}
+          clienteId={perfil.id}
+          clienteNombre={perfil.nombre}
+          contadorFidelidad={perfil.contadorFidelidad}
+          beneficiosDisponibles={perfil.beneficiosDisponibles}
+          onClose={() => setModalCorteVisible(false)}
+          onSuccess={() => {
+            setModalCorteVisible(false);
+            cargarPerfil();
+          }}
+        />
+      )}
     </View>
   );
 }
@@ -371,6 +403,26 @@ const styles = StyleSheet.create({
     height: 36,
     /* Ghost border color for dividers */
     backgroundColor: colors.ghostBorder,
+  },
+
+  /* ── Acciones del barbero ── */
+  barberóActions: {
+    gap: spacing.sm,
+  },
+  registrarCorteBtn: {
+    backgroundColor: colors.primaryContainer,
+    borderRadius: radius.md,
+    height: 52,
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingHorizontal: spacing.xl,
+  },
+  registrarCorteBtnText: {
+    fontFamily: fonts.familyDisplay,
+    fontSize: fonts.bodyLg,
+    color: colors.onPrimaryContainer,
+    textTransform: 'uppercase',
+    letterSpacing: 0.8,
   },
 
   /* ── Contactar WhatsApp (barbero) ── */

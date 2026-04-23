@@ -1,4 +1,4 @@
-import { View, StyleSheet, ActivityIndicator } from 'react-native';
+import { View, StyleSheet, ActivityIndicator, TouchableOpacity, Text } from 'react-native';
 import { StatusBar } from 'expo-status-bar';
 import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
 import { useFonts } from 'expo-font';
@@ -13,8 +13,33 @@ import TopNavBar from './src/components/TopNavBar';
 import BottomNavBar, { TabKey } from './src/components/BottomNavBar';
 import { useRouter } from './src/hooks/useRouter';
 import { colors } from './src/styles/theme';
+import { RolProvider, useRol } from './src/context/RolContext';
+
+function DebugRolBubble() {
+  const { rol, setRol } = useRol();
+  const isBarbero = rol === 'barbero';
+  return (
+    <TouchableOpacity
+      style={[styles.debugBubble, isBarbero ? styles.debugBubbleBarbero : styles.debugBubbleCliente]}
+      onPress={() => setRol(isBarbero ? 'cliente' : 'barbero')}
+      activeOpacity={0.8}
+    >
+      <Text style={styles.debugBubbleText}>
+        {isBarbero ? '✂ BARBERO' : '👤 CLIENTE'}
+      </Text>
+    </TouchableOpacity>
+  );
+}
 
 export default function App() {
+  return (
+    <RolProvider>
+      <AppContent />
+    </RolProvider>
+  );
+}
+
+function AppContent() {
   const [fontsLoaded] = useFonts({
     Epilogue_700Bold,
     Epilogue_900Black,
@@ -97,6 +122,7 @@ export default function App() {
           {renderScreen()}
         </View>
         <BottomNavBar activeTab={activeTab} onTabPress={handleTabPress} />
+        <DebugRolBubble />
       </SafeAreaView>
     </SafeAreaProvider>
   );
@@ -115,5 +141,31 @@ const styles = StyleSheet.create({
     backgroundColor: colors.background,
     alignItems: 'center',
     justifyContent: 'center',
+  },
+  debugBubble: {
+    position: 'absolute',
+    bottom: 90,
+    right: 16,
+    paddingHorizontal: 14,
+    paddingVertical: 8,
+    borderRadius: 9999,
+    zIndex: 999,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.4,
+    shadowRadius: 8,
+    elevation: 10,
+  },
+  debugBubbleBarbero: {
+    backgroundColor: colors.primaryContainer,
+  },
+  debugBubbleCliente: {
+    backgroundColor: colors.secondaryContainer,
+  },
+  debugBubbleText: {
+    color: colors.onSurface,
+    fontSize: 12,
+    fontWeight: '700',
+    letterSpacing: 0.5,
   },
 });

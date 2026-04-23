@@ -26,9 +26,16 @@ export interface ClienteResponse {
 
 export interface CorteResponse {
   id: string;
+  tipoCorte: string;
+  precio: number;
   fecha: string;
-  tipo: string | null;
-  notas: string | null;
+  esGratis: boolean;
+}
+
+export interface RegistrarCorteRequest {
+  clienteId: string;
+  tipoCorte: string;
+  precio: number;
 }
 
 export interface BeneficioResponse {
@@ -69,6 +76,22 @@ export async function buscarClientes(query: string): Promise<ClienteResponse[]> 
 
 export async function obtenerPerfilCliente(clienteId: string): Promise<PerfilClienteResponse> {
   const response = await api.get<PerfilClienteResponse>(`/api/v1/clientes/${clienteId}/perfil`);
+  return response.data;
+}
+
+export async function registrarCorte(req: RegistrarCorteRequest): Promise<{ id: string }> {
+  const response = await api.post<{ id: string }>('/api/v1/cortes', req);
+  return response.data;
+}
+
+export interface CanjearCorteGratisRequest {
+  clienteId: string;
+  beneficioId: string;
+  tipoCorte: string;
+}
+
+export async function canjearCorteGratis(req: CanjearCorteGratisRequest): Promise<{ id: string; esGratis: string }> {
+  const response = await api.post<{ id: string; esGratis: string }>('/api/v1/cortes/canje', req);
   return response.data;
 }
 
