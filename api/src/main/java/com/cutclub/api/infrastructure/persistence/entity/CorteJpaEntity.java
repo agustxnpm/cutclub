@@ -8,6 +8,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
@@ -24,12 +25,15 @@ public class CorteJpaEntity {
     @Column(name = "cliente_id", nullable = false)
     private UUID clienteId;
 
+    @Column(name = "tipo_corte", nullable = false, length = 50)
+    private String tipoCorte;
+
+    @Column(nullable = false, precision = 10, scale = 2)
+    private BigDecimal precio;
+
     @Column(nullable = false)
     private LocalDateTime fecha;
 
-    @Column(length = 50)
-    private String tipo;
-
-    @Column(length = 255)
-    private String notas;
+    @Column(name = "es_gratis", nullable = false)
+    private boolean esGratis;
 }

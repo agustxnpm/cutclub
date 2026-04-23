@@ -11,9 +11,21 @@ public class CorteMapper {
         return new Corte(
                 entity.getId(),
                 entity.getClienteId(),
+                entity.getTipoCorte(),
+                entity.getPrecio(),
                 entity.getFecha(),
-                entity.getTipo(),
-                entity.getNotas()
+                entity.isEsGratis()
+        );
+    }
+
+    public CorteJpaEntity toEntity(Corte corte) {
+        return new CorteJpaEntity(
+                corte.id(),
+                corte.clienteId(),
+                corte.tipoCorte(),
+                corte.precio(),
+                corte.fecha(),
+                corte.esGratis()
         );
     }
 }

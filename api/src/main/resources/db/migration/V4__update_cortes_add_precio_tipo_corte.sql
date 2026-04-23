@@ -1,0 +1,7 @@
+ALTER TABLE cortes
+    ADD COLUMN tipo_corte VARCHAR(50)         NOT NULL DEFAULT 'CLÁSICO',
+    ADD COLUMN precio     NUMERIC(10, 2)      NOT NULL DEFAULT 0,
+    ADD COLUMN es_gratis  BOOLEAN             NOT NULL DEFAULT false;
+
+ALTER TABLE cortes DROP COLUMN IF EXISTS tipo;
+ALTER TABLE cortes DROP COLUMN IF EXISTS notas;

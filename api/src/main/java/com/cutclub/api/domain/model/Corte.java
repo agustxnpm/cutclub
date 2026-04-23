@@ -1,5 +1,6 @@
 package com.cutclub.api.domain.model;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
@@ -9,13 +10,17 @@ import java.util.UUID;
 public record Corte(
         UUID id,
         UUID clienteId,
+        String tipoCorte,
+        BigDecimal precio,
         LocalDateTime fecha,
-        String tipo,
-        String notas
+        boolean esGratis
 ) {
     public Corte {
-        if (id == null) throw new IllegalArgumentException("El id del corte no puede ser nulo");
+        if (id == null) id = UUID.randomUUID();
+        if (fecha == null) fecha = LocalDateTime.now();
         if (clienteId == null) throw new IllegalArgumentException("El clienteId no puede ser nulo");
-        if (fecha == null) throw new IllegalArgumentException("La fecha del corte es obligatoria");
+        if (tipoCorte == null || tipoCorte.isBlank()) throw new IllegalArgumentException("El tipoCorte es obligatorio");
+        if (precio == null || precio.compareTo(BigDecimal.ZERO) < 0)
+            throw new IllegalArgumentException("El precio debe ser mayor o igual a 0");
     }
 }

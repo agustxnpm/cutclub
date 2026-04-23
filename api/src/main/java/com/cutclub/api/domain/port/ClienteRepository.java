@@ -5,6 +5,7 @@ import com.cutclub.api.domain.model.PerfilCliente;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 /**
  * Puerto de salida (Outbound Port) para la persistencia de clientes.
@@ -16,6 +17,8 @@ import java.util.Optional;
 public interface ClienteRepository {
 
     void save(Cliente cliente);
+
+    Optional<Cliente> buscarPorId(UUID id);
 
     List<Cliente> listarTodos();
 

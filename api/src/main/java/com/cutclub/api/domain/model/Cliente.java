@@ -93,4 +93,28 @@ public class Cliente {
     public String getContrasenaHash() {
         return contrasenaHash;
     }
+
+    /**
+     * Incrementa el contador de fidelidad en 1.
+     * Regla de negocio: se llama cada vez que se registra un corte pagado.
+     */
+    public void incrementarFidelidad() {
+        this.contadorFidelidad++;
+    }
+
+    /**
+     * Verifica si el contador alcanzó la meta de fidelización.
+     * Si es así, lo reinicia a 0 y retorna true (indicando que corresponde generar un beneficio).
+     * El reinicio es la acción primaria; la generación del beneficio es consecuencia de éste.
+     *
+     * @param meta número de cortes necesarios para completar un ciclo
+     * @return true si se completó un ciclo y el contador fue reiniciado
+     */
+    public boolean cicloFidelidadCompleto(int meta) {
+        if (this.contadorFidelidad >= meta) {
+            this.contadorFidelidad = 0;
+            return true;
+        }
+        return false;
+    }
 }
