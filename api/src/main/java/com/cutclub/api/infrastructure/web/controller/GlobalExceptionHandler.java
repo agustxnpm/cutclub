@@ -1,5 +1,7 @@
 package com.cutclub.api.infrastructure.web.controller;
 
+import com.cutclub.api.domain.exception.BeneficioNoDisponibleException;
+import com.cutclub.api.domain.exception.BeneficioNoEncontradoException;
 import com.cutclub.api.domain.exception.ClienteNoEncontradoException;
 import com.cutclub.api.domain.exception.ClienteYaExisteException;
 import com.cutclub.api.domain.exception.CredencialesInvalidasException;
@@ -28,6 +30,18 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(CredencialesInvalidasException.class)
     public ResponseEntity<Map<String, String>> handleCredencialesInvalidas(CredencialesInvalidasException ex) {
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                .body(Map.of("error", ex.getMessage()));
+    }
+
+    @ExceptionHandler(BeneficioNoEncontradoException.class)
+    public ResponseEntity<Map<String, String>> handleBeneficioNoEncontrado(BeneficioNoEncontradoException ex) {
+        return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                .body(Map.of("error", ex.getMessage()));
+    }
+
+    @ExceptionHandler(BeneficioNoDisponibleException.class)
+    public ResponseEntity<Map<String, String>> handleBeneficioNoDisponible(BeneficioNoDisponibleException ex) {
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                 .body(Map.of("error", ex.getMessage()));
     }
 }

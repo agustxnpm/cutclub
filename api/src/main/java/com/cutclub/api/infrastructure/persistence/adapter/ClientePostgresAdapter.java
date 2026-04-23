@@ -3,6 +3,7 @@ package com.cutclub.api.infrastructure.persistence.adapter;
 import com.cutclub.api.domain.model.Beneficio;
 import com.cutclub.api.domain.model.Cliente;
 import com.cutclub.api.domain.model.Corte;
+import com.cutclub.api.domain.model.EstadoBeneficio;
 import com.cutclub.api.domain.model.PerfilCliente;
 import com.cutclub.api.domain.port.ClienteRepository;
 import com.cutclub.api.infrastructure.persistence.entity.ClienteJpaEntity;
@@ -49,6 +50,12 @@ public class ClientePostgresAdapter implements ClienteRepository {
     }
 
     @Override
+    public Optional<Cliente> buscarPorId(UUID id) {
+        return clienteJpaRepository.findById(id)
+                .map(clienteMapper::toDomain);
+    }
+
+    @Override
     public List<Cliente> listarTodos() {
         return clienteJpaRepository.findAll().stream()
                 .map(clienteMapper::toDomain)
@@ -80,7 +87,7 @@ public class ClientePostgresAdapter implements ClienteRepository {
                     .map(corteMapper::toDomain)
                     .orElse(null);
 
-            List<Beneficio> beneficiosDisponibles = beneficioJpaRepository.findByClienteIdAndActivoTrue(id)
+            List<Beneficio> beneficiosDisponibles = beneficioJpaRepository.findByClienteIdAndEstado(id, EstadoBeneficio.AVAILABLE)
                     .stream()
                     .map(beneficioMapper::toDomain)
                     .toList();

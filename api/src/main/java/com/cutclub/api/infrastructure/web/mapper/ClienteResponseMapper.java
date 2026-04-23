@@ -31,7 +31,7 @@ public class ClienteResponseMapper {
         CorteResponse ultimoCorte = null;
         if (perfil.ultimoCorte() != null) {
             Corte corte = perfil.ultimoCorte();
-            ultimoCorte = new CorteResponse(corte.id(), corte.fecha(), corte.tipo(), corte.notas());
+            ultimoCorte = new CorteResponse(corte.id(), corte.tipoCorte(), corte.precio(), corte.fecha(), corte.esGratis());
         }
 
         List<BeneficioResponse> beneficios = perfil.beneficiosDisponibles().stream()
@@ -46,6 +46,6 @@ public class ClienteResponseMapper {
     }
 
     private BeneficioResponse toResponse(Beneficio beneficio) {
-        return new BeneficioResponse(beneficio.id(), beneficio.tipo(), beneficio.fechaCreacion());
+        return new BeneficioResponse(beneficio.getId(), beneficio.getTipo().name(), beneficio.getFechaCreacion());
     }
 }

@@ -12,8 +12,18 @@ public class BeneficioMapper {
                 entity.getId(),
                 entity.getClienteId(),
                 entity.getTipo(),
-                entity.isActivo(),
+                entity.getEstado(),
                 entity.getFechaCreacion()
+        );
+    }
+
+    public BeneficioJpaEntity toEntity(Beneficio beneficio) {
+        return new BeneficioJpaEntity(
+                beneficio.getId(),
+                beneficio.getClienteId(),
+                beneficio.getTipo(),
+                beneficio.getEstado(),
+                beneficio.getFechaCreacion()
         );
     }
 }
