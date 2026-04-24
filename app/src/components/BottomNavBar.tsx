@@ -1,35 +1,28 @@
 import React from 'react';
 import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
-import { Store, Users, CalendarDays, Sparkles } from 'lucide-react-native';
+import { Users, LogIn, LogOut } from 'lucide-react-native';
 import { colors, spacing, fonts, radius } from '../styles/theme';
 
-export type TabKey = 'shop' | 'clients' | 'bookings' | 'vip';
+export type TabKey = 'clients' | 'cuenta';
 
 interface BottomNavBarProps {
   activeTab: TabKey;
   onTabPress: (tab: TabKey) => void;
+  /** 'login' cuando el barbero no tiene sesión de cliente activa; 'logout' cuando hay un cliente logueado */
+  cuentaVariant: 'login' | 'logout';
 }
 
-const TAB_ICONS: Record<TabKey, React.ComponentType<{ size: number; color: string; strokeWidth: number }>> = {
-  shop: Store,
-  clients: Users,
-  bookings: CalendarDays,
-  vip: Sparkles,
-};
+export default function BottomNavBar({ activeTab, onTabPress, cuentaVariant }: BottomNavBarProps) {
+  const tabs: { key: TabKey; label: string; Icon: React.ComponentType<{ size: number; color: string; strokeWidth: number }> }[] = [
+    { key: 'clients', label: 'CLIENTES', Icon: Users },
+    { key: 'cuenta',  label: cuentaVariant === 'logout' ? 'SALIR' : 'CUENTA', Icon: cuentaVariant === 'logout' ? LogOut : LogIn },
+  ];
 
-const TABS: { key: TabKey; label: string }[] = [
-  { key: 'shop',     label: 'SHOP' },
-  { key: 'clients',  label: 'CLIENTES' },
-  { key: 'bookings', label: 'TURNOS' },
-  { key: 'vip',      label: 'VIP' },
-];
-
-export default function BottomNavBar({ activeTab, onTabPress }: BottomNavBarProps) {
   return (
     <View style={styles.container}>
-      {TABS.map((tab) => {
+      {tabs.map((tab) => {
         const active = activeTab === tab.key;
-        const Icon = TAB_ICONS[tab.key];
+        const { Icon } = tab;
         return (
           <TouchableOpacity
             key={tab.key}

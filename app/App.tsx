@@ -61,12 +61,22 @@ function AppContent() {
     );
   }
 
+  const { rol, setRol } = useRol();
+
   const activeTab: TabKey =
-    screen.name === 'authCliente' || screen.name === 'preAuth' ? 'vip' : 'clients';
+    screen.name === 'authCliente' || screen.name === 'preAuth' ? 'cuenta' : 'clients';
+
+  const cuentaVariant = rol === 'cliente' ? 'logout' : 'login';
 
   const handleTabPress = (tab: TabKey) => {
-    if (tab === 'vip') {
-      navigate({ name: 'preAuth' });
+    if (tab === 'cuenta') {
+      if (rol === 'cliente') {
+        // Logout: volver al rol barbero y al buscador
+        setRol('barbero');
+        navigate({ name: 'buscar' });
+      } else {
+        navigate({ name: 'preAuth' });
+      }
     } else if (tab === 'clients') {
       navigate({ name: 'buscar' });
     }
@@ -121,7 +131,7 @@ function AppContent() {
         <View style={styles.content}>
           {renderScreen()}
         </View>
-        <BottomNavBar activeTab={activeTab} onTabPress={handleTabPress} />
+        <BottomNavBar activeTab={activeTab} onTabPress={handleTabPress} cuentaVariant={cuentaVariant} />
         <DebugRolBubble />
       </SafeAreaView>
     </SafeAreaProvider>
