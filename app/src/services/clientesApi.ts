@@ -119,11 +119,17 @@ export async function loginCliente(telefono: string, contrasena: string): Promis
  * Si el teléfono ya existe (registrado por el barbero), el backend vincula
  * la cuenta y retorna el cliente existente con su historial.
  */
-export async function registroCliente(nombre: string, telefono: string, contrasena: string): Promise<AuthResponse> {
+export async function registroCliente(
+  nombre: string,
+  telefono: string,
+  contrasena: string,
+  codigoReferido?: string,
+): Promise<AuthResponse> {
   const response = await api.post<AuthResponse>('/api/v1/clientes/auth/registro', {
     nombre,
     telefono,
     contrasena,
+    ...(codigoReferido?.trim() ? { codigoReferido: codigoReferido.trim() } : {}),
   });
   return response.data;
 }

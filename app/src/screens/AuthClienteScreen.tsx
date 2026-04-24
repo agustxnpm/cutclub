@@ -120,6 +120,7 @@ export default function AuthClienteScreen({ initialMode = 'login', onAuthSuccess
   const [telefono, setTelefono] = useState('');
   const [phoneDial, setPhoneDial] = useState('54');
   const [contrasena, setContrasena] = useState('');
+  const [codigoReferido, setCodigoReferido] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [toast, setToast] = useState<{ message: string; type: 'success' | 'error' | 'info' } | null>(null);
 
@@ -131,6 +132,7 @@ export default function AuthClienteScreen({ initialMode = 'login', onAuthSuccess
     setTelefono('');
     setPhoneDial('54');
     setContrasena('');
+    setCodigoReferido('');
     setToast(null);
   };
 
@@ -200,7 +202,7 @@ export default function AuthClienteScreen({ initialMode = 'login', onAuthSuccess
 
     setIsLoading(true);
     try {
-      const cliente = await registroCliente(nombre.trim(), buildFullPhone(phoneDial, telefono), contrasena);
+      const cliente = await registroCliente(nombre.trim(), buildFullPhone(phoneDial, telefono), contrasena, codigoReferido);
       setToast({ message: '¡Cuenta creada! Bienvenido al club', type: 'success' });
       setTimeout(() => onAuthSuccess(cliente.clienteId), 600);
     } catch (err: any) {
@@ -217,6 +219,8 @@ export default function AuthClienteScreen({ initialMode = 'login', onAuthSuccess
         } catch {
           // Si falla el login automático, que el usuario intente manualmente
         }
+      } else if (status === 400 && err?.response?.data?.error?.toLowerCase().includes('referido')) {
+        setToast({ message: 'El código de referido ingresado no es válido', type: 'error' });
       } else {
         setToast({ message: 'Error al crear la cuenta', type: 'error' });
       }
@@ -292,6 +296,17 @@ export default function AuthClienteScreen({ initialMode = 'login', onAuthSuccess
                   keyboardType="phone-pad"
                   editable={!isLoading}
                   icon={<Phone size={18} color={colors.outline + '4D'} strokeWidth={1.5} />}
+                />
+              )}
+
+              {mode === 'registro' && (
+                <EditorialInput
+                  label="Código de referido (opcional)"
+                  value={codigoReferido}
+                  onChangeText={setCodigoReferido}
+                  placeholder="Ej. ABC123"
+                  autoCapitalize="none"
+                  editable={!isLoading}
                 />
               )}
 
