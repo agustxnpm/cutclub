@@ -93,12 +93,17 @@ public class ClientePostgresAdapter implements ClienteRepository {
                     .map(corteMapper::toDomain)
                     .orElse(null);
 
+            List<Corte> historialCortes = corteJpaRepository.findByClienteIdOrderByFechaDesc(id)
+                    .stream()
+                    .map(corteMapper::toDomain)
+                    .toList();
+
             List<Beneficio> beneficiosDisponibles = beneficioJpaRepository.findByClienteIdAndEstado(id, EstadoBeneficio.AVAILABLE)
                     .stream()
                     .map(beneficioMapper::toDomain)
                     .toList();
 
-            return new PerfilCliente(cliente, ultimoCorte, beneficiosDisponibles);
+            return new PerfilCliente(cliente, ultimoCorte, historialCortes, beneficiosDisponibles);
         });
     }
 }

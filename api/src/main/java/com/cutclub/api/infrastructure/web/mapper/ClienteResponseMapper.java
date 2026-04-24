@@ -40,10 +40,14 @@ public class ClienteResponseMapper {
                 .map(b -> toResponse(b, descripcionesBeneficios))
                 .toList();
 
+        List<CorteResponse> historial = perfil.historialCortes().stream()
+                .map(corte -> new CorteResponse(corte.id(), corte.tipoCorte(), corte.precio(), corte.fecha(), corte.esGratis()))
+                .toList();
+
         return new PerfilClienteResponse(
                 c.getId(), c.getNombre(), c.getTelefono(),
                 c.getCodigoReferido(), c.getContadorFidelidad(),
-                ultimoCorte, beneficios, esReferidoPendiente, nombreReferente
+                ultimoCorte, historial, beneficios, esReferidoPendiente, nombreReferente
         );
     }
 

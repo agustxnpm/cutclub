@@ -26,18 +26,13 @@ interface PerfilClienteScreenProps {
 
 /* ─── Static data for sections without backend support ─── */
 
-const MOCK_TIMELINE = [
-  { id: '1', fecha: '14/05', servicio: 'Corte Ejecutivo', notas: 'Mantenimiento por Alex C.', precio: '$85.00' },
-  { id: '2', fecha: '12/04', servicio: 'Skin Fade + Barba', notas: 'Mantenimiento por Julian R.', precio: '$110.00' },
-  { id: '3', fecha: '08/02', servicio: 'Afeitado con Toalla', notas: 'Mantenimiento por Sarah W.', precio: '$60.00' },
-];
-
 export default function PerfilClienteScreen({ clienteId, onBack }: PerfilClienteScreenProps) {
   const [perfil, setPerfil] = useState<PerfilClienteResponse | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(false);
   const [modalCorteVisible, setModalCorteVisible] = useState(false);
   const [modalValidarVisible, setModalValidarVisible] = useState(false);
+  const [historialExpandido, setHistorialExpandido] = useState(false);
   const contactScale = useRef(new Animated.Value(1)).current;
   const { rol } = useRol();
 
@@ -280,34 +275,49 @@ export default function PerfilClienteScreen({ clienteId, onBack }: PerfilCliente
         </View>
 
         {/* ════════════════════════════════════════
-            SERVICE TIMELINE (sin backend)
+            SERVICE TIMELINE
             Editorial list with date blocks
            ════════════════════════════════════════ */}
         <View style={styles.timelineSection}>
           <Text style={styles.timelineHeadline}>Historial de Servicios</Text>
 
           <View style={styles.timelineList}>
-            {MOCK_TIMELINE.map((item) => (
-              <View key={item.id} style={styles.timelineItem}>
-                <View style={styles.timelineDateBox}>
-                  <Text style={styles.timelineDateText}>{item.fecha}</Text>
+            {perfil.historialCortes.length === 0 ? (
+              <Text style={styles.timelineNotes}>Sin cortes registrados aún.</Text>
+            ) : (
+              (historialExpandido ? perfil.historialCortes : perfil.historialCortes.slice(0, 3)).map((corte) => (
+                <View key={corte.id} style={styles.timelineItem}>
+                  <View style={styles.timelineDateBox}>
+                    <Text style={styles.timelineDateDay}>
+                      {(() => { const d = new Date(corte.fecha); return `${d.getDate().toString().padStart(2,'0')}/${(d.getMonth()+1).toString().padStart(2,'0')}`; })()}
+                    </Text>
+                    <Text style={styles.timelineDateYear}>{new Date(corte.fecha).getFullYear()}</Text>
+                  </View>
+                  <View style={styles.timelineCopy}>
+                    <Text style={styles.timelineService}>{corte.tipoCorte}</Text>
+                    {corte.esGratis && (
+                      <Text style={styles.timelineNotes}>Corte gratis</Text>
+                    )}
+                  </View>
+                  <View style={styles.timelineRight}>
+                    <Text style={styles.timelinePriceLabel}>PRECIO</Text>
+                    <Text style={styles.timelinePrice}>
+                      {corte.esGratis ? 'GRATIS' : `$${Number(corte.precio).toFixed(2)}`}
+                    </Text>
+                  </View>
                 </View>
-                <View style={styles.timelineCopy}>
-                  <Text style={styles.timelineService}>{item.servicio}</Text>
-                  <Text style={styles.timelineNotes}>{item.notas}</Text>
-                </View>
-                <View style={styles.timelineRight}>
-                  <Text style={styles.timelinePriceLabel}>PRECIO</Text>
-                  <Text style={styles.timelinePrice}>{item.precio}</Text>
-                </View>
-              </View>
-            ))}
+              ))
+            )}
           </View>
 
           {/* Secondary button: ghost style per DESIGN.md */}
-          <TouchableOpacity style={styles.historyBtn} activeOpacity={0.7}>
-            <Text style={styles.historyBtnText}>VER HISTORIAL COMPLETO</Text>
-          </TouchableOpacity>
+          {perfil.historialCortes.length > 3 && (
+            <TouchableOpacity style={styles.historyBtn} activeOpacity={0.7} onPress={() => setHistorialExpandido(prev => !prev)}>
+              <Text style={styles.historyBtnText}>
+                {historialExpandido ? 'OCULTAR HISTORIAL' : 'VER HISTORIAL COMPLETO'}
+              </Text>
+            </TouchableOpacity>
+          )}
         </View>
 
       </ScrollView>
@@ -710,19 +720,27 @@ const styles = StyleSheet.create({
     gap: spacing.base,
   },
   timelineDateBox: {
-    width: 52,
+    width: 58,
     height: 52,
     /* surfaceContainerHighest nested inside surfaceContainerLow */
     backgroundColor: colors.surfaceContainerHighest,
     borderRadius: radius.md,
     alignItems: 'center',
     justifyContent: 'center',
+    gap: 0,
   },
-  timelineDateText: {
-    /* Headline-style inside date box */
-    fontSize: fonts.bodyMd,
+  timelineDateDay: {
+    fontSize: fonts.bodySm,
     fontFamily: fonts.familyDisplayBlack,
     color: colors.onSurfaceVariant,
+    lineHeight: 16,
+  },
+  timelineDateYear: {
+    fontSize: 10,
+    fontFamily: fonts.familyBody,
+    color: colors.onSurfaceVariant,
+    opacity: 0.6,
+    lineHeight: 12,
   },
   timelineCopy: {
     flex: 1,

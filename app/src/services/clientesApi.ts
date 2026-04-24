@@ -52,6 +52,7 @@ export interface PerfilClienteResponse {
   codigoReferido: string;
   contadorFidelidad: number;
   ultimoCorte: CorteResponse | null;
+  historialCortes: CorteResponse[];
   beneficiosDisponibles: BeneficioResponse[];
   esReferidoPendiente: boolean;
   nombreReferente: string | null;
