@@ -9,6 +9,7 @@ import com.cutclub.api.application.service.RegistrarCuentaClienteUseCase;
 import com.cutclub.api.domain.port.BeneficioRepository;
 import com.cutclub.api.domain.port.ClienteRepository;
 import com.cutclub.api.domain.port.CorteRepository;
+import com.cutclub.api.domain.port.ReferidoRepository;
 import com.cutclub.api.domain.service.CodificadorContrasena;
 import com.cutclub.api.domain.service.CodigoReferidoGenerator;
 import com.cutclub.api.infrastructure.adapter.service.CodificadorContrasenaImpl;
@@ -56,9 +57,10 @@ public class BeanConfiguration {
     @Bean
     public RegistrarCuentaClienteUseCase registrarCuentaClienteUseCase(
             ClienteRepository clienteRepository,
+            ReferidoRepository referidoRepository,
             CodigoReferidoGenerator codigoReferidoGenerator,
             CodificadorContrasena codificadorContrasena) {
-        return new RegistrarCuentaClienteUseCase(clienteRepository, codigoReferidoGenerator, codificadorContrasena);
+        return new RegistrarCuentaClienteUseCase(clienteRepository, referidoRepository, codigoReferidoGenerator, codificadorContrasena);
     }
 
     @Bean

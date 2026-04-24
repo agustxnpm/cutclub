@@ -26,5 +26,7 @@ public interface ClienteRepository {
 
     Optional<Cliente> buscarPorTelefono(String telefono);
 
+    Optional<Cliente> buscarPorCodigoReferido(String codigo);
+
     Optional<PerfilCliente> obtenerPerfil(String clienteId);
 }

@@ -77,6 +77,12 @@ public class ClientePostgresAdapter implements ClienteRepository {
     }
 
     @Override
+    public Optional<Cliente> buscarPorCodigoReferido(String codigo) {
+        return clienteJpaRepository.findByCodigoReferido(codigo)
+                .map(clienteMapper::toDomain);
+    }
+
+    @Override
     public Optional<PerfilCliente> obtenerPerfil(String clienteId) {
         UUID id = UUID.fromString(clienteId);
 

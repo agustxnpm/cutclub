@@ -4,6 +4,7 @@ import com.cutclub.api.domain.exception.BeneficioNoDisponibleException;
 import com.cutclub.api.domain.exception.BeneficioNoEncontradoException;
 import com.cutclub.api.domain.exception.ClienteNoEncontradoException;
 import com.cutclub.api.domain.exception.ClienteYaExisteException;
+import com.cutclub.api.domain.exception.CodigoReferidoInvalidoException;
 import com.cutclub.api.domain.exception.CredencialesInvalidasException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -41,6 +42,12 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(BeneficioNoDisponibleException.class)
     public ResponseEntity<Map<String, String>> handleBeneficioNoDisponible(BeneficioNoDisponibleException ex) {
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                .body(Map.of("error", ex.getMessage()));
+    }
+
+    @ExceptionHandler(CodigoReferidoInvalidoException.class)
+    public ResponseEntity<Map<String, String>> handleCodigoReferidoInvalido(CodigoReferidoInvalidoException ex) {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                 .body(Map.of("error", ex.getMessage()));
     }

@@ -13,6 +13,8 @@ public interface ClienteJpaRepository extends JpaRepository<ClienteJpaEntity, UU
 
     Optional<ClienteJpaEntity> findByTelefono(String telefono);
 
+    Optional<ClienteJpaEntity> findByCodigoReferido(String codigoReferido);
+
     @Query(value = "SELECT * FROM clientes WHERE telefono LIKE CONCAT('%', :suffix) LIMIT 1",
             nativeQuery = true)
     Optional<ClienteJpaEntity> findByTelefonoEndingWith(@Param("suffix") String suffix);

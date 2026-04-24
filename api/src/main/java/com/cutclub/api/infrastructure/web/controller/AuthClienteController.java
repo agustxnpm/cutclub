@@ -35,7 +35,12 @@ public class AuthClienteController {
 
     @PostMapping("/registro")
     public ResponseEntity<AuthClienteResponse> registro(@Valid @RequestBody RegistroClienteAuthRequest request) {
-        Cliente cliente = registrarCuentaClienteUseCase.registrar(request.nombre(), request.telefono(), request.contrasena());
+        Cliente cliente = registrarCuentaClienteUseCase.registrar(
+                request.nombre(),
+                request.telefono(),
+                request.contrasena(),
+                request.codigoReferido()
+        );
         return ResponseEntity.status(HttpStatus.CREATED).body(toResponse(cliente));
     }
 
