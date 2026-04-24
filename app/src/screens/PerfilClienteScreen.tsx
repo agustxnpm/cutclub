@@ -15,6 +15,7 @@ import { META_CORTES_FIDELIDAD } from '../constants/fidelidad';
 import { obtenerPerfilCliente, PerfilClienteResponse } from '../services/clientesApi';
 import LoyaltyRing from '../components/LoyaltyRing';
 import RegistrarCorteSheet from './RegistrarCorteSheet';
+import ValidarReferidoSheet from './ValidarReferidoSheet';
 import { useRol } from '../context/RolContext';
 import { colors, spacing, fonts, radius, shadows } from '../styles/theme';
 
@@ -36,6 +37,7 @@ export default function PerfilClienteScreen({ clienteId, onBack }: PerfilCliente
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(false);
   const [modalCorteVisible, setModalCorteVisible] = useState(false);
+  const [modalValidarVisible, setModalValidarVisible] = useState(false);
   const contactScale = useRef(new Animated.Value(1)).current;
   const { rol } = useRol();
 
@@ -164,6 +166,24 @@ export default function PerfilClienteScreen({ clienteId, onBack }: PerfilCliente
         {/* ════════════════════════════════════════
             LOYALTY RING — surfaceContainerLow tier
            ════════════════════════════════════════ */}
+        {/* Callout: referido pendiente de validación (solo barbero) */}
+        {isBarbero && perfil.esReferidoPendiente && (
+          <TouchableOpacity
+            style={styles.referidoCallout}
+            activeOpacity={0.8}
+            onPress={() => setModalValidarVisible(true)}
+          >
+            <View style={styles.referidoCalloutDot} />
+            <View style={styles.referidoCalloutCopy}>
+              <Text style={styles.referidoCalloutTitle}>VALIDACIÓN PENDIENTE</Text>
+              <Text style={styles.referidoCalloutSub}>
+                Este cliente fue referido. Confirmá si es nuevo para liberar el beneficio.
+              </Text>
+            </View>
+            <Text style={styles.referidoCalloutArrow}>→</Text>
+          </TouchableOpacity>
+        )}
+
         <LoyaltyRing
           actual={perfil.contadorFidelidad}
           meta={META_CORTES_FIDELIDAD}
@@ -189,8 +209,8 @@ export default function PerfilClienteScreen({ clienteId, onBack }: PerfilCliente
                     <Sparkles size={14} color={colors.primary} strokeWidth={1.5} />
                   </View>
                   <View style={styles.rewardCopy}>
-                    <Text style={styles.rewardName}>{b.tipo}</Text>
-                    <Text style={styles.rewardSub}>Fidelidad</Text>
+                    <Text style={styles.rewardName}>Corte gratis</Text>
+                    <Text style={styles.rewardSub}>{b.descripcionOrigen}</Text>
                   </View>
                 </View>
               ))}
@@ -202,7 +222,7 @@ export default function PerfilClienteScreen({ clienteId, onBack }: PerfilCliente
                   <Lock size={14} color={colors.outline} strokeWidth={1.5} />
                 </View>
                 <View style={styles.rewardCopy}>
-                  <Text style={styles.rewardNameLocked}>Corte Gratis</Text>
+                  <Text style={styles.rewardNameLocked}>Corte gratis</Text>
                   <Text style={styles.rewardSubLocked}>Bloqueado</Text>
                 </View>
               </View>
@@ -211,7 +231,7 @@ export default function PerfilClienteScreen({ clienteId, onBack }: PerfilCliente
                   <Lock size={14} color={colors.outline} strokeWidth={1.5} />
                 </View>
                 <View style={styles.rewardCopy}>
-                  <Text style={styles.rewardNameLocked}>Beneficio Referido</Text>
+                  <Text style={styles.rewardNameLocked}>Beneficio referido</Text>
                   <Text style={styles.rewardSubLocked}>Bloqueado</Text>
                 </View>
               </View>
@@ -302,6 +322,24 @@ export default function PerfilClienteScreen({ clienteId, onBack }: PerfilCliente
           onClose={() => setModalCorteVisible(false)}
           onSuccess={() => {
             setModalCorteVisible(false);
+            // Si el referido estaba pendiente antes del corte, disparar validación
+            if (perfil.esReferidoPendiente) {
+              setModalValidarVisible(true);
+            }
+            cargarPerfil();
+          }}
+        />
+      )}
+
+      {perfil && (
+        <ValidarReferidoSheet
+          visible={modalValidarVisible}
+          clienteId={perfil.id}
+          clienteNombre={perfil.nombre}
+          referenteNombre={perfil.nombreReferente}
+          onClose={() => setModalValidarVisible(false)}
+          onSuccess={() => {
+            setModalValidarVisible(false);
             cargarPerfil();
           }}
         />
@@ -445,6 +483,46 @@ const styles = StyleSheet.create({
     color: colors.onSurfaceVariant,
     letterSpacing: 2,
     textTransform: 'uppercase',
+  },
+
+  /* ── Callout: referido pendiente de validación ── */
+  referidoCallout: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing.base,
+    backgroundColor: 'rgba(178, 197, 255, 0.07)',
+    borderWidth: 1,
+    borderColor: 'rgba(178, 197, 255, 0.22)',
+    borderRadius: radius.lg,
+    padding: spacing.xl,
+  },
+  referidoCalloutDot: {
+    width: 8,
+    height: 8,
+    borderRadius: radius.full,
+    backgroundColor: colors.primary,
+    flexShrink: 0,
+  },
+  referidoCalloutCopy: {
+    flex: 1,
+    gap: 4,
+  },
+  referidoCalloutTitle: {
+    fontFamily: fonts.familyBodyBold,
+    fontSize: fonts.labelSm,
+    color: colors.primary,
+    letterSpacing: 1.5,
+  },
+  referidoCalloutSub: {
+    fontFamily: fonts.familyBody,
+    fontSize: fonts.bodySm,
+    color: colors.onSurfaceVariant,
+    lineHeight: fonts.bodySm * 1.5,
+  },
+  referidoCalloutArrow: {
+    fontFamily: fonts.familyBodyBold,
+    fontSize: fonts.titleMd,
+    color: colors.primary,
   },
 
   /* ── Rewards card ── */

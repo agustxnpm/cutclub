@@ -42,6 +42,7 @@ export interface BeneficioResponse {
   id: string;
   tipo: string;
   fechaCreacion: string;
+  descripcionOrigen: string;
 }
 
 export interface PerfilClienteResponse {
@@ -52,6 +53,8 @@ export interface PerfilClienteResponse {
   contadorFidelidad: number;
   ultimoCorte: CorteResponse | null;
   beneficiosDisponibles: BeneficioResponse[];
+  esReferidoPendiente: boolean;
+  nombreReferente: string | null;
 }
 
 export async function listarClientes(): Promise<ClienteResponse[]> {
@@ -132,4 +135,16 @@ export async function registroCliente(
     ...(codigoReferido?.trim() ? { codigoReferido: codigoReferido.trim() } : {}),
   });
   return response.data;
+}
+
+/**
+ * Validación presencial del referido (HU 3.3).
+ * El barbero confirma si el cliente atendido es realmente un cliente nuevo.
+ * {referidoId} es el UUID del cliente referido (coincide con clienteId del perfil).
+ */
+export async function validarReferido(
+  referidoId: string,
+  esNuevoReal: boolean,
+): Promise<void> {
+  await api.patch(`/api/v1/referidos/${referidoId}/validar`, { esNuevoReal });
 }
