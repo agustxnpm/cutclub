@@ -2,9 +2,9 @@ package com.cutclub.api.infrastructure.web.controller;
 
 import com.cutclub.api.application.service.BuscarClientesUseCase;
 import com.cutclub.api.application.service.ObtenerPerfilClienteUseCase;
+import com.cutclub.api.application.service.PerfilClienteResult;
 import com.cutclub.api.application.service.RegistrarClienteNuevoService;
 import com.cutclub.api.domain.model.Cliente;
-import com.cutclub.api.domain.model.PerfilCliente;
 import com.cutclub.api.infrastructure.web.dto.ClienteResponse;
 import com.cutclub.api.infrastructure.web.dto.PerfilClienteResponse;
 import com.cutclub.api.infrastructure.web.dto.RegistrarClienteRequest;
@@ -69,7 +69,12 @@ public class ClienteController {
 
     @GetMapping("/{id}/perfil")
     public ResponseEntity<PerfilClienteResponse> obtenerPerfil(@PathVariable String id) {
-        PerfilCliente perfil = obtenerPerfilClienteUseCase.obtener(id);
-        return ResponseEntity.ok(responseMapper.toResponse(perfil));
+        PerfilClienteResult resultado = obtenerPerfilClienteUseCase.obtener(id);
+        return ResponseEntity.ok(responseMapper.toResponse(
+                resultado.perfil(),
+                resultado.esReferidoPendiente(),
+                resultado.nombreReferente(),
+                resultado.descripcionesBeneficios()
+        ));
     }
 }

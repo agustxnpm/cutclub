@@ -1,5 +1,7 @@
 package com.cutclub.api.domain.model;
 
+import com.cutclub.api.domain.exception.ReferidoNoValidableException;
+
 import java.util.UUID;
 
 /**
@@ -62,5 +64,29 @@ public class Referido {
 
     public EstadoReferido getEstado() {
         return estado;
+    }
+
+    /**
+     * Aprueba el vínculo de referido. Solo es válido si el estado es PENDING_VALIDATION.
+     * El barbero lo invoca cuando confirma presencialmente que el referido es un cliente nuevo.
+     */
+    public void aprobar() {
+        if (this.estado != EstadoReferido.PENDING_VALIDATION) {
+            throw new ReferidoNoValidableException(
+                    "El referido no puede aprobarse porque su estado actual es: " + this.estado);
+        }
+        this.estado = EstadoReferido.APPROVED;
+    }
+
+    /**
+     * Rechaza el vínculo de referido. Solo es válido si el estado es PENDING_VALIDATION.
+     * El barbero lo invoca cuando el supuesto referido no es un cliente nuevo.
+     */
+    public void rechazar() {
+        if (this.estado != EstadoReferido.PENDING_VALIDATION) {
+            throw new ReferidoNoValidableException(
+                    "El referido no puede rechazarse porque su estado actual es: " + this.estado);
+        }
+        this.estado = EstadoReferido.REJECTED;
     }
 }

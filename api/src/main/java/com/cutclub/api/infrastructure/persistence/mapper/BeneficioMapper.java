@@ -13,7 +13,8 @@ public class BeneficioMapper {
                 entity.getClienteId(),
                 entity.getTipo(),
                 entity.getEstado(),
-                entity.getFechaCreacion()
+                entity.getFechaCreacion(),
+                entity.getOrigenReferidoId()
         );
     }
 
@@ -23,7 +24,8 @@ public class BeneficioMapper {
                 beneficio.getClienteId(),
                 beneficio.getTipo(),
                 beneficio.getEstado(),
-                beneficio.getFechaCreacion()
+                beneficio.getFechaCreacion(),
+                beneficio.getOrigenReferidoId()
         );
     }
 }

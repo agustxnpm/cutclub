@@ -62,7 +62,8 @@ public class RegistrarCorteUseCase {
                     clienteId,
                     TipoBeneficio.FIDELIZACION,
                     EstadoBeneficio.AVAILABLE,
-                    LocalDateTime.now()
+                    LocalDateTime.now(),
+                    null
             );
             beneficioRepository.save(beneficio);
         }

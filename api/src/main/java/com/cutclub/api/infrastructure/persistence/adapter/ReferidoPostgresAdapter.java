@@ -6,6 +6,9 @@ import com.cutclub.api.infrastructure.persistence.mapper.ReferidoMapper;
 import com.cutclub.api.infrastructure.persistence.repository.ReferidoJpaRepository;
 import org.springframework.stereotype.Repository;
 
+import java.util.Optional;
+import java.util.UUID;
+
 @Repository
 public class ReferidoPostgresAdapter implements ReferidoRepository {
 
@@ -21,5 +24,11 @@ public class ReferidoPostgresAdapter implements ReferidoRepository {
     @Override
     public void guardar(Referido referido) {
         referidoJpaRepository.save(referidoMapper.toEntity(referido));
+    }
+
+    @Override
+    public Optional<Referido> buscarPorReferidoId(UUID referidoId) {
+        return referidoJpaRepository.findByReferidoId(referidoId)
+                .map(referidoMapper::toDomain);
     }
 }

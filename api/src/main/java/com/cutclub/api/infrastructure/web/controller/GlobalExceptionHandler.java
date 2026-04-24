@@ -6,6 +6,8 @@ import com.cutclub.api.domain.exception.ClienteNoEncontradoException;
 import com.cutclub.api.domain.exception.ClienteYaExisteException;
 import com.cutclub.api.domain.exception.CodigoReferidoInvalidoException;
 import com.cutclub.api.domain.exception.CredencialesInvalidasException;
+import com.cutclub.api.domain.exception.ReferidoNoEncontradoException;
+import com.cutclub.api.domain.exception.ReferidoNoValidableException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -48,6 +50,18 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(CodigoReferidoInvalidoException.class)
     public ResponseEntity<Map<String, String>> handleCodigoReferidoInvalido(CodigoReferidoInvalidoException ex) {
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                .body(Map.of("error", ex.getMessage()));
+    }
+
+    @ExceptionHandler(ReferidoNoEncontradoException.class)
+    public ResponseEntity<Map<String, String>> handleReferidoNoEncontrado(ReferidoNoEncontradoException ex) {
+        return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                .body(Map.of("error", ex.getMessage()));
+    }
+
+    @ExceptionHandler(ReferidoNoValidableException.class)
+    public ResponseEntity<Map<String, String>> handleReferidoNoValidable(ReferidoNoValidableException ex) {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                 .body(Map.of("error", ex.getMessage()));
     }

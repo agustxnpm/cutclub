@@ -6,6 +6,7 @@ import com.cutclub.api.application.service.ObtenerPerfilClienteUseCase;
 import com.cutclub.api.application.service.RegistrarClienteNuevoService;
 import com.cutclub.api.application.service.RegistrarCorteUseCase;
 import com.cutclub.api.application.service.RegistrarCuentaClienteUseCase;
+import com.cutclub.api.application.service.ValidarReferidoUseCase;
 import com.cutclub.api.domain.port.BeneficioRepository;
 import com.cutclub.api.domain.port.ClienteRepository;
 import com.cutclub.api.domain.port.CorteRepository;
@@ -44,8 +45,9 @@ public class BeanConfiguration {
     }
 
     @Bean
-    public ObtenerPerfilClienteUseCase obtenerPerfilClienteUseCase(ClienteRepository clienteRepository) {
-        return new ObtenerPerfilClienteUseCase(clienteRepository);
+    public ObtenerPerfilClienteUseCase obtenerPerfilClienteUseCase(ClienteRepository clienteRepository,
+                                                                    ReferidoRepository referidoRepository) {
+        return new ObtenerPerfilClienteUseCase(clienteRepository, referidoRepository);
     }
 
     @Bean
@@ -70,5 +72,12 @@ public class BeanConfiguration {
             BeneficioRepository beneficioRepository,
             @Value("${cutclub.fidelidad.meta:5}") int metaFidelidad) {
         return new RegistrarCorteUseCase(clienteRepository, corteRepository, beneficioRepository, metaFidelidad);
+    }
+
+    @Bean
+    public ValidarReferidoUseCase validarReferidoUseCase(
+            ReferidoRepository referidoRepository,
+            BeneficioRepository beneficioRepository) {
+        return new ValidarReferidoUseCase(referidoRepository, beneficioRepository);
     }
 }

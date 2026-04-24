@@ -11,6 +11,8 @@ import com.cutclub.api.infrastructure.web.dto.PerfilClienteResponse;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
+import java.util.Map;
+import java.util.UUID;
 
 @Component
 public class ClienteResponseMapper {
@@ -25,7 +27,7 @@ public class ClienteResponseMapper {
         );
     }
 
-    public PerfilClienteResponse toResponse(PerfilCliente perfil) {
+    public PerfilClienteResponse toResponse(PerfilCliente perfil, boolean esReferidoPendiente, String nombreReferente, Map<UUID, String> descripcionesBeneficios) {
         Cliente c = perfil.cliente();
 
         CorteResponse ultimoCorte = null;
@@ -35,17 +37,30 @@ public class ClienteResponseMapper {
         }
 
         List<BeneficioResponse> beneficios = perfil.beneficiosDisponibles().stream()
-                .map(this::toResponse)
+                .map(b -> toResponse(b, descripcionesBeneficios))
                 .toList();
 
         return new PerfilClienteResponse(
                 c.getId(), c.getNombre(), c.getTelefono(),
                 c.getCodigoReferido(), c.getContadorFidelidad(),
-                ultimoCorte, beneficios
+                ultimoCorte, beneficios, esReferidoPendiente, nombreReferente
         );
     }
 
-    private BeneficioResponse toResponse(Beneficio beneficio) {
-        return new BeneficioResponse(beneficio.getId(), beneficio.getTipo().name(), beneficio.getFechaCreacion());
+    public PerfilClienteResponse toResponse(PerfilCliente perfil, boolean esReferidoPendiente, String nombreReferente) {
+        return toResponse(perfil, esReferidoPendiente, nombreReferente, Map.of());
+    }
+
+    public PerfilClienteResponse toResponse(PerfilCliente perfil, boolean esReferidoPendiente) {
+        return toResponse(perfil, esReferidoPendiente, null, Map.of());
+    }
+
+    public PerfilClienteResponse toResponse(PerfilCliente perfil) {
+        return toResponse(perfil, false, null, Map.of());
+    }
+
+    private BeneficioResponse toResponse(Beneficio beneficio, Map<UUID, String> descripciones) {
+        String descripcion = descripciones.getOrDefault(beneficio.getId(), "Beneficio activo");
+        return new BeneficioResponse(beneficio.getId(), beneficio.getTipo().name(), beneficio.getFechaCreacion(), descripcion);
     }
 }

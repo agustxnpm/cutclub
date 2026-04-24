@@ -10,6 +10,8 @@ public record PerfilClienteResponse(
         String codigoReferido,
         int contadorFidelidad,
         CorteResponse ultimoCorte,
-        List<BeneficioResponse> beneficiosDisponibles
+        List<BeneficioResponse> beneficiosDisponibles,
+        boolean esReferidoPendiente,
+        String nombreReferente
 ) {
 }

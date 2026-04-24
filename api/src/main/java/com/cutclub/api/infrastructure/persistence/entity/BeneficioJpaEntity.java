@@ -35,4 +35,7 @@ public class BeneficioJpaEntity {
 
     @Column(name = "fecha_creacion", nullable = false)
     private LocalDateTime fechaCreacion;
+
+    @Column(name = "origen_referido_id")
+    private UUID origenReferidoId;
 }

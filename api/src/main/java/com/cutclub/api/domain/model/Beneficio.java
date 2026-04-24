@@ -16,8 +16,10 @@ public class Beneficio {
     private final TipoBeneficio tipo;
     private EstadoBeneficio estado;
     private final LocalDateTime fechaCreacion;
+    /** UUID del cliente referido que originó este beneficio. Solo aplica para tipo REFERIDO. */
+    private final UUID origenReferidoId;
 
-    public Beneficio(UUID id, UUID clienteId, TipoBeneficio tipo, EstadoBeneficio estado, LocalDateTime fechaCreacion) {
+    public Beneficio(UUID id, UUID clienteId, TipoBeneficio tipo, EstadoBeneficio estado, LocalDateTime fechaCreacion, UUID origenReferidoId) {
         if (id == null) throw new IllegalArgumentException("El id del beneficio no puede ser nulo");
         if (clienteId == null) throw new IllegalArgumentException("El clienteId no puede ser nulo");
         if (tipo == null) throw new IllegalArgumentException("El tipo de beneficio es obligatorio");
@@ -28,6 +30,7 @@ public class Beneficio {
         this.tipo = tipo;
         this.estado = estado;
         this.fechaCreacion = fechaCreacion;
+        this.origenReferidoId = origenReferidoId;
     }
 
     public void canjear() {
@@ -43,4 +46,5 @@ public class Beneficio {
     public TipoBeneficio getTipo() { return tipo; }
     public EstadoBeneficio getEstado() { return estado; }
     public LocalDateTime getFechaCreacion() { return fechaCreacion; }
+    public UUID getOrigenReferidoId() { return origenReferidoId; }
 }
