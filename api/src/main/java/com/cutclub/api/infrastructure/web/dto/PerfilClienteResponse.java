@@ -13,6 +13,7 @@ public record PerfilClienteResponse(
         List<CorteResponse> historialCortes,
         List<BeneficioResponse> beneficiosDisponibles,
         boolean esReferidoPendiente,
-        String nombreReferente
+        String nombreReferente,
+        String fechaRegistro
 ) {
 }

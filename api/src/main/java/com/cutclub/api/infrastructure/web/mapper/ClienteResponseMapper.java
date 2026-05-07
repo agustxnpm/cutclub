@@ -44,10 +44,13 @@ public class ClienteResponseMapper {
                 .map(corte -> new CorteResponse(corte.id(), corte.tipoCorte(), corte.precio(), corte.fecha(), corte.esGratis()))
                 .toList();
 
+        String fechaRegistro = c.getFechaRegistro() != null ? c.getFechaRegistro().toString() : null;
+
         return new PerfilClienteResponse(
                 c.getId(), c.getNombre(), c.getTelefono(),
                 c.getCodigoReferido(), c.getContadorFidelidad(),
-                ultimoCorte, historial, beneficios, esReferidoPendiente, nombreReferente
+                ultimoCorte, historial, beneficios, esReferidoPendiente, nombreReferente,
+                fechaRegistro
         );
     }
 

@@ -1,5 +1,6 @@
 package com.cutclub.api.domain.model;
 
+import java.time.LocalDate;
 import java.util.UUID;
 
 /**
@@ -10,6 +11,10 @@ import java.util.UUID;
  * - nombre y telefono son obligatorios y no pueden estar vacíos.
  * - codigoReferido es obligatorio (proporcionado externamente).
  * - contadorFidelidad siempre inicia en 0 al crear un cliente nuevo.
+ *
+ * Nota arquitectónica:
+ * - La autenticación NO es responsabilidad de este agregado.
+ *   Las credenciales viven en {@link Usuario} (mismo id por convención cuando aplica).
  */
 public class Cliente {
 
@@ -17,17 +22,16 @@ public class Cliente {
     private final String nombre;
     private final String telefono;
     private final String codigoReferido;
-    private final String contrasenaHash;
     private int contadorFidelidad;
+    private final LocalDate fechaRegistro;
 
-    // Constructor privado — la creación se controla mediante factory methods
-    private Cliente(UUID id, String nombre, String telefono, String codigoReferido, int contadorFidelidad, String contrasenaHash) {
+    private Cliente(UUID id, String nombre, String telefono, String codigoReferido, int contadorFidelidad, LocalDate fechaRegistro) {
         this.id = id;
         this.nombre = nombre;
         this.telefono = telefono;
         this.codigoReferido = codigoReferido;
         this.contadorFidelidad = contadorFidelidad;
-        this.contrasenaHash = contrasenaHash;
+        this.fechaRegistro = fechaRegistro;
     }
 
     /**
@@ -35,19 +39,26 @@ public class Cliente {
      * El id se genera automáticamente y el contadorFidelidad inicia en 0.
      */
     public static Cliente crearNuevo(String nombre, String telefono, String codigoReferido) {
-        return crearNuevo(nombre, telefono, codigoReferido, null);
+        validarCamposObligatorios(nombre, telefono, codigoReferido);
+        return new Cliente(UUID.randomUUID(), nombre, telefono, codigoReferido, 0, LocalDate.now());
     }
 
-    public static Cliente crearNuevo(String nombre, String telefono, String codigoReferido, String contrasenaHash) {
+    /**
+     * Crea un Cliente nuevo asignando explícitamente su id.
+     * Se usa cuando el id debe coincidir con otra identidad (ej. el Usuario asociado).
+     */
+    public static Cliente crearNuevoConId(UUID id, String nombre, String telefono, String codigoReferido) {
+        if (id == null) {
+            throw new IllegalArgumentException("El id no puede ser nulo");
+        }
         validarCamposObligatorios(nombre, telefono, codigoReferido);
-        return new Cliente(UUID.randomUUID(), nombre, telefono, codigoReferido, 0, contrasenaHash);
+        return new Cliente(id, nombre, telefono, codigoReferido, 0, LocalDate.now());
     }
 
     /**
      * Factory method para reconstruir un Cliente existente desde persistencia.
-     * Permite restaurar el estado completo sin violar las reglas de creación.
      */
-    public static Cliente reconstruir(UUID id, String nombre, String telefono, String codigoReferido, int contadorFidelidad, String contrasenaHash) {
+    public static Cliente reconstruir(UUID id, String nombre, String telefono, String codigoReferido, int contadorFidelidad, LocalDate fechaRegistro) {
         if (id == null) {
             throw new IllegalArgumentException("El id no puede ser nulo al reconstruir un Cliente");
         }
@@ -55,7 +66,7 @@ public class Cliente {
         if (contadorFidelidad < 0) {
             throw new IllegalArgumentException("El contador de fidelidad no puede ser negativo");
         }
-        return new Cliente(id, nombre, telefono, codigoReferido, contadorFidelidad, contrasenaHash);
+        return new Cliente(id, nombre, telefono, codigoReferido, contadorFidelidad, fechaRegistro);
     }
 
     private static void validarCamposObligatorios(String nombre, String telefono, String codigoReferido) {
@@ -90,8 +101,8 @@ public class Cliente {
         return contadorFidelidad;
     }
 
-    public String getContrasenaHash() {
-        return contrasenaHash;
+    public LocalDate getFechaRegistro() {
+        return fechaRegistro;
     }
 
     /**
@@ -105,7 +116,6 @@ public class Cliente {
     /**
      * Verifica si el contador alcanzó la meta de fidelización.
      * Si es así, lo reinicia a 0 y retorna true (indicando que corresponde generar un beneficio).
-     * El reinicio es la acción primaria; la generación del beneficio es consecuencia de éste.
      *
      * @param meta número de cortes necesarios para completar un ciclo
      * @return true si se completó un ciclo y el contador fue reiniciado

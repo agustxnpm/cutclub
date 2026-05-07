@@ -8,6 +8,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDateTime;
 import java.util.UUID;
 
 @Entity
@@ -32,6 +33,6 @@ public class ClienteJpaEntity {
     @Column(name = "contador_fidelidad", nullable = false)
     private Integer contadorFidelidad;
 
-    @Column(name = "contrasena_hash")
-    private String contrasenaHash;
+    @Column(name = "created_at", nullable = false, insertable = false, updatable = false)
+    private LocalDateTime createdAt;
 }
