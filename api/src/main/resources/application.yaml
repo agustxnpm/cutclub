@@ -1,4 +1,6 @@
 spring:
+  autoconfigure:
+    exclude: org.springframework.boot.autoconfigure.security.servlet.UserDetailsServiceAutoConfiguration
   datasource:
     url: jdbc:postgresql://localhost:5432/cutclub
     username: ${DB_USERNAME:cutclub}
@@ -13,3 +15,10 @@ spring:
   security:
     filter:
       dispatcher-types: request
+
+cutclub:
+  security:
+    jwt:
+      # Reemplazar por una clave fuerte (mín. 32 bytes) en producción vía variable de entorno.
+      secret: ${JWT_SECRET:cambiar-esta-clave-secreta-de-al-menos-32-bytes!}
+      expiration-ms: ${JWT_EXPIRATION_MS:86400000}

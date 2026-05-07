@@ -6,6 +6,7 @@ import com.cutclub.api.domain.exception.ClienteNoEncontradoException;
 import com.cutclub.api.domain.exception.ClienteYaExisteException;
 import com.cutclub.api.domain.exception.CodigoReferidoInvalidoException;
 import com.cutclub.api.domain.exception.CredencialesInvalidasException;
+import com.cutclub.api.domain.exception.LicenciaExpiradaException;
 import com.cutclub.api.domain.exception.ReferidoNoEncontradoException;
 import com.cutclub.api.domain.exception.ReferidoNoValidableException;
 import org.springframework.http.HttpStatus;
@@ -33,6 +34,12 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(CredencialesInvalidasException.class)
     public ResponseEntity<Map<String, String>> handleCredencialesInvalidas(CredencialesInvalidasException ex) {
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                .body(Map.of("error", ex.getMessage()));
+    }
+
+    @ExceptionHandler(LicenciaExpiradaException.class)
+    public ResponseEntity<Map<String, String>> handleLicenciaExpirada(LicenciaExpiradaException ex) {
+        return ResponseEntity.status(HttpStatus.FORBIDDEN)
                 .body(Map.of("error", ex.getMessage()));
     }
 
