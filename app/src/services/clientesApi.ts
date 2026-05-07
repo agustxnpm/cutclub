@@ -1,20 +1,13 @@
-import axios from 'axios';
-import { Platform } from 'react-native';
-import Constants from 'expo-constants';
-
-function getBaseUrl(): string {
-  if (Platform.OS === 'web') return 'http://localhost:8080';
-
-  // En Expo Go, debuggerHost contiene la IP del dev server (ej. "192.168.0.112:8081")
-  const debuggerHost = Constants.expoConfig?.hostUri ?? Constants.experienceUrl ?? '';
-  const ip = debuggerHost.split(':')[0];
-  return ip ? `http://${ip}:8080` : 'http://localhost:8080';
-}
-
-const api = axios.create({
-  baseURL: getBaseUrl(),
-  headers: { 'Content-Type': 'application/json' },
-});
+/**
+ * Endpoints de negocio (clientes, cortes, beneficios, referidos).
+ *
+ * La autenticación está separada en `./auth/authApi.ts` y `./auth/authStore.ts`.
+ * Los wrappers `loginCliente` / `registroCliente` se conservan como adaptadores
+ * para mantener la firma que ya consumen las pantallas existentes.
+ */
+import { api } from './http/api';
+import { login, registrar } from './auth/authApi';
+import type { AuthSession } from './auth/authStore';
 
 export interface ClienteResponse {
   id: string;
@@ -56,6 +49,7 @@ export interface PerfilClienteResponse {
   beneficiosDisponibles: BeneficioResponse[];
   esReferidoPendiente: boolean;
   nombreReferente: string | null;
+  fechaRegistro: string | null;
 }
 
 export async function listarClientes(): Promise<ClienteResponse[]> {
@@ -64,10 +58,7 @@ export async function listarClientes(): Promise<ClienteResponse[]> {
 }
 
 export async function postCliente(nombre: string, telefono: string): Promise<ClienteResponse> {
-  const response = await api.post<ClienteResponse>('/api/v1/clientes', {
-    nombre,
-    telefono,
-  });
+  const response = await api.post<ClienteResponse>('/api/v1/clientes', { nombre, telefono });
   return response.data;
 }
 
@@ -94,58 +85,30 @@ export interface CanjearCorteGratisRequest {
   tipoCorte: string;
 }
 
-export async function canjearCorteGratis(req: CanjearCorteGratisRequest): Promise<{ id: string; esGratis: string }> {
+export async function canjearCorteGratis(
+  req: CanjearCorteGratisRequest,
+): Promise<{ id: string; esGratis: string }> {
   const response = await api.post<{ id: string; esGratis: string }>('/api/v1/cortes/canje', req);
   return response.data;
 }
 
-/**
- * Login de cliente por teléfono.
- * Busca un cliente existente por su teléfono y devuelve su perfil.
- * Si el teléfono fue registrado previamente por el barbero, vincula automáticamente.
- */
-export interface AuthResponse {
-  clienteId: string;
-  nombre: string;
-  telefono: string;
+export async function validarReferido(referidoId: string, esNuevoReal: boolean): Promise<void> {
+  await api.patch(`/api/v1/referidos/${referidoId}/validar`, { esNuevoReal });
 }
 
-export async function loginCliente(telefono: string, contrasena: string): Promise<AuthResponse> {
-  const response = await api.post<AuthResponse>('/api/v1/clientes/auth/login', {
-    telefono,
-    contrasena,
-  });
-  return response.data;
+// --- Adaptadores de auth para preservar la API que usan las screens actuales ---
+
+export type AuthResponse = AuthSession;
+
+export function loginCliente(telefono: string, contrasena: string): Promise<AuthResponse> {
+  return login({ telefono, contrasena });
 }
 
-/**
- * Registro autónomo de un cliente.
- * Si el teléfono ya existe (registrado por el barbero), el backend vincula
- * la cuenta y retorna el cliente existente con su historial.
- */
-export async function registroCliente(
+export function registroCliente(
   nombre: string,
   telefono: string,
   contrasena: string,
   codigoReferido?: string,
 ): Promise<AuthResponse> {
-  const response = await api.post<AuthResponse>('/api/v1/clientes/auth/registro', {
-    nombre,
-    telefono,
-    contrasena,
-    ...(codigoReferido?.trim() ? { codigoReferido: codigoReferido.trim() } : {}),
-  });
-  return response.data;
-}
-
-/**
- * Validación presencial del referido (HU 3.3).
- * El barbero confirma si el cliente atendido es realmente un cliente nuevo.
- * {referidoId} es el UUID del cliente referido (coincide con clienteId del perfil).
- */
-export async function validarReferido(
-  referidoId: string,
-  esNuevoReal: boolean,
-): Promise<void> {
-  await api.patch(`/api/v1/referidos/${referidoId}/validar`, { esNuevoReal });
+  return registrar({ nombre, telefono, contrasena, codigoReferido });
 }
