@@ -1,4 +1,4 @@
-import { View, StyleSheet, ActivityIndicator, TouchableOpacity, Text } from 'react-native';
+import { View, StyleSheet, ActivityIndicator } from 'react-native';
 import { StatusBar } from 'expo-status-bar';
 import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
 import { useFonts } from 'expo-font';
@@ -13,33 +13,17 @@ import TopNavBar from './src/components/TopNavBar';
 import BottomNavBar, { TabKey } from './src/components/BottomNavBar';
 import { useRouter } from './src/hooks/useRouter';
 import { colors } from './src/styles/theme';
-import { RolProvider, useRol } from './src/context/RolContext';
-
-function DebugRolBubble() {
-  const { rol, setRol } = useRol();
-  const isBarbero = rol === 'barbero';
-  return (
-    <TouchableOpacity
-      style={[styles.debugBubble, isBarbero ? styles.debugBubbleBarbero : styles.debugBubbleCliente]}
-      onPress={() => setRol(isBarbero ? 'cliente' : 'barbero')}
-      activeOpacity={0.8}
-    >
-      <Text style={styles.debugBubbleText}>
-        {isBarbero ? '✂ BARBERO' : '👤 CLIENTE'}
-      </Text>
-    </TouchableOpacity>
-  );
-}
+import { useEffect, useState } from 'react';
+import { useSession } from './src/hooks/useSession';
+import { bootAuth } from './src/services/auth/authStore';
+import { setOnUnauthorized } from './src/services/http/api';
 
 export default function App() {
-  return (
-    <RolProvider>
-      <AppContent />
-    </RolProvider>
-  );
+  return <AppContent />;
 }
 
 function AppContent() {
+  // ─── Todos los hooks deben declararse antes de cualquier early return ───
   const [fontsLoaded] = useFonts({
     Epilogue_700Bold,
     Epilogue_900Black,
@@ -52,8 +36,26 @@ function AppContent() {
   });
 
   const { screen, navigate } = useRouter();
+  const session = useSession();
+  const isBarbero = session?.roles.includes('BARBERO') ?? false;
+  const [authReady, setAuthReady] = useState(false);
 
-  if (!fontsLoaded) {
+  useEffect(() => {
+    bootAuth().then(() => setAuthReady(true));
+    setOnUnauthorized(() => navigate({ name: 'preAuth' }));
+    return () => setOnUnauthorized(null);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  // Si un CLIENTE autenticado termina en la pantalla de directorio, redirigir a su perfil.
+  useEffect(() => {
+    if (screen.name === 'buscar' && session && !isBarbero) {
+      navigate({ name: 'perfil', clienteId: session.id });
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [screen.name, session?.id, isBarbero]);
+
+  if (!fontsLoaded || !authReady) {
     return (
       <View style={styles.loading}>
         <ActivityIndicator color="#B2C5FF" size="large" />
@@ -61,24 +63,32 @@ function AppContent() {
     );
   }
 
-  const { rol, setRol } = useRol();
+  const isAuthScreen = screen.name === 'authCliente' || screen.name === 'preAuth';
 
-  const activeTab: TabKey =
-    screen.name === 'authCliente' || screen.name === 'preAuth' ? 'cuenta' : 'clients';
+  const activeTab: TabKey = isAuthScreen ? 'cuenta' : 'clients';
 
-  const cuentaVariant = rol === 'cliente' ? 'logout' : 'login';
+  const cuentaVariant = session ? 'logout' : 'login';
 
   const handleTabPress = (tab: TabKey) => {
     if (tab === 'cuenta') {
-      if (rol === 'cliente') {
-        // Logout: volver al rol barbero y al buscador
-        setRol('barbero');
-        navigate({ name: 'buscar' });
+      if (session) {
+        // Logout: limpiar sesión y volver al buscador
+        import('./src/services/auth/authApi').then(({ logout }) => {
+          logout().then(() => navigate({ name: 'preAuth' }));
+        });
       } else {
         navigate({ name: 'preAuth' });
       }
     } else if (tab === 'clients') {
-      navigate({ name: 'buscar' });
+      if (!session) {
+        navigate({ name: 'preAuth' });
+        return;
+      }
+      if (isBarbero) {
+        navigate({ name: 'buscar' });
+      } else {
+        navigate({ name: 'perfil', clienteId: session.id });
+      }
     }
   };
 
@@ -95,7 +105,13 @@ function AppContent() {
         return (
           <AuthClienteScreen
             initialMode={screen.mode}
-            onAuthSuccess={(id) => navigate({ name: 'perfil', clienteId: id })}
+            onAuthSuccess={(authSession) => {
+              if (authSession.roles.includes('BARBERO')) {
+                navigate({ name: 'buscar' });
+              } else {
+                navigate({ name: 'perfil', clienteId: authSession.id });
+              }
+            }}
             onSwitchMode={(m) => navigate({ name: 'authCliente', mode: m })}
           />
         );
@@ -109,7 +125,12 @@ function AppContent() {
         return (
           <PerfilClienteScreen
             clienteId={screen.clienteId}
-            onBack={() => navigate({ name: 'buscar' })}
+            onBack={isBarbero ? () => navigate({ name: 'buscar' }) : undefined}
+            onLogout={!isBarbero ? () => {
+              import('./src/services/auth/authApi').then(({ logout }) => {
+                logout().then(() => navigate({ name: 'preAuth' }));
+              });
+            } : undefined}
           />
         );
       case 'buscar':
@@ -131,8 +152,9 @@ function AppContent() {
         <View style={styles.content}>
           {renderScreen()}
         </View>
-        <BottomNavBar activeTab={activeTab} onTabPress={handleTabPress} cuentaVariant={cuentaVariant} />
-        <DebugRolBubble />
+        {!isAuthScreen && isBarbero && (
+          <BottomNavBar activeTab={activeTab} onTabPress={handleTabPress} cuentaVariant={cuentaVariant} showClientsTab={isBarbero} />
+        )}
       </SafeAreaView>
     </SafeAreaProvider>
   );
@@ -151,31 +173,5 @@ const styles = StyleSheet.create({
     backgroundColor: colors.background,
     alignItems: 'center',
     justifyContent: 'center',
-  },
-  debugBubble: {
-    position: 'absolute',
-    bottom: 90,
-    right: 16,
-    paddingHorizontal: 14,
-    paddingVertical: 8,
-    borderRadius: 9999,
-    zIndex: 999,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.4,
-    shadowRadius: 8,
-    elevation: 10,
-  },
-  debugBubbleBarbero: {
-    backgroundColor: colors.primaryContainer,
-  },
-  debugBubbleCliente: {
-    backgroundColor: colors.secondaryContainer,
-  },
-  debugBubbleText: {
-    color: colors.onSurface,
-    fontSize: 12,
-    fontWeight: '700',
-    letterSpacing: 0.5,
   },
 });

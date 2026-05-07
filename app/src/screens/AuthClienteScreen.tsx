@@ -11,8 +11,9 @@ import {
   ScrollView,
   Animated,
 } from 'react-native';
-import { User, Phone, Lock, ArrowRight, Eye, EyeOff } from 'lucide-react-native';
-import { loginCliente, registroCliente } from '../services/clientesApi';
+import { User, ArrowRight, Eye, EyeOff } from 'lucide-react-native';
+import { login, registrar } from '../services/auth/authApi';
+import { type AuthSession } from '../services/auth/authStore';
 import { colors, spacing, radius, fonts, shadows } from '../styles/theme';
 import PhoneInput, { buildFullPhone } from '../components/PhoneInput';
 
@@ -110,7 +111,7 @@ function EditorialInput({
 
 interface AuthClienteScreenProps {
   initialMode?: AuthMode;
-  onAuthSuccess: (clienteId: string) => void;
+  onAuthSuccess: (session: AuthSession) => void;
   onSwitchMode?: (mode: AuthMode) => void;
 }
 
@@ -168,9 +169,9 @@ export default function AuthClienteScreen({ initialMode = 'login', onAuthSuccess
 
     setIsLoading(true);
     try {
-      const cliente = await loginCliente(telefono.trim(), contrasena);
-      setToast({ message: `Bienvenido, ${cliente.nombre}`, type: 'success' });
-      setTimeout(() => onAuthSuccess(cliente.clienteId), 600);
+      const session = await login({ telefono: buildFullPhone(phoneDial, telefono.trim()), contrasena });
+      setToast({ message: `Bienvenido${session.nombre ? ', ' + session.nombre : ''}`, type: 'success' });
+      setTimeout(() => onAuthSuccess(session), 600);
     } catch (err: any) {
       const status = err?.response?.status;
       if (status === 404) {
@@ -202,20 +203,20 @@ export default function AuthClienteScreen({ initialMode = 'login', onAuthSuccess
 
     setIsLoading(true);
     try {
-      const cliente = await registroCliente(nombre.trim(), buildFullPhone(phoneDial, telefono), contrasena, codigoReferido);
+      const session = await registrar({ nombre: nombre.trim(), telefono: buildFullPhone(phoneDial, telefono), contrasena, codigoReferido: codigoReferido.trim() || undefined });
       setToast({ message: '¡Cuenta creada! Bienvenido al club', type: 'success' });
-      setTimeout(() => onAuthSuccess(cliente.clienteId), 600);
+      setTimeout(() => onAuthSuccess(session), 600);
     } catch (err: any) {
       const status = err?.response?.status;
       if (status === 409) {
         setToast({
-          message: 'Este teléfono ya tiene cuenta. Tu historial fue vinculado automáticamente.',
+          message: 'Este teléfono ya tiene cuenta. Iniciando sesión...',
           type: 'info',
         });
-        // Intentar login automático para vincular
+        // Intentar login automático
         try {
-          const cliente = await loginCliente(telefono.trim(), contrasena);
-          setTimeout(() => onAuthSuccess(cliente.clienteId), 1500);
+          const session = await login({ telefono: buildFullPhone(phoneDial, telefono.trim()), contrasena });
+          setTimeout(() => onAuthSuccess(session), 1500);
         } catch {
           // Si falla el login automático, que el usuario intente manualmente
         }
@@ -278,26 +279,14 @@ export default function AuthClienteScreen({ initialMode = 'login', onAuthSuccess
                 />
               )}
 
-              {mode === 'registro' ? (
-                <PhoneInput
-                  label="Número de teléfono"
-                  localNumber={telefono}
-                  onChangeLocalNumber={setTelefono}
-                  countryDial={phoneDial}
-                  onChangeCountryDial={setPhoneDial}
-                  editable={!isLoading}
-                />
-              ) : (
-                <EditorialInput
-                  label="Número de teléfono"
-                  value={telefono}
-                  onChangeText={setTelefono}
-                  placeholder="280 456 7890"
-                  keyboardType="phone-pad"
-                  editable={!isLoading}
-                  icon={<Phone size={18} color={colors.outline + '4D'} strokeWidth={1.5} />}
-                />
-              )}
+              <PhoneInput
+                label="Número de teléfono"
+                localNumber={telefono}
+                onChangeLocalNumber={setTelefono}
+                countryDial={phoneDial}
+                onChangeCountryDial={setPhoneDial}
+                editable={!isLoading}
+              />
 
               {mode === 'registro' && (
                 <EditorialInput

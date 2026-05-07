@@ -10,23 +10,24 @@ import {
   Animated,
 } from 'react-native';
 import Svg, { Path } from 'react-native-svg';
-import { ArrowLeft, Star, Sparkles, Lock, Scissors } from 'lucide-react-native';
+import { ArrowLeft, Star, Sparkles, Lock, Scissors, LogOut } from 'lucide-react-native';
 import { META_CORTES_FIDELIDAD } from '../constants/fidelidad';
 import { obtenerPerfilCliente, PerfilClienteResponse } from '../services/clientesApi';
 import LoyaltyRing from '../components/LoyaltyRing';
 import RegistrarCorteSheet from './RegistrarCorteSheet';
 import ValidarReferidoSheet from './ValidarReferidoSheet';
-import { useRol } from '../context/RolContext';
+import { useIsBarbero } from '../hooks/useSession';
 import { colors, spacing, fonts, radius, shadows } from '../styles/theme';
 
 interface PerfilClienteScreenProps {
   clienteId: string;
-  onBack: () => void;
+  onBack?: () => void;
+  onLogout?: () => void;
 }
 
 /* ─── Static data for sections without backend support ─── */
 
-export default function PerfilClienteScreen({ clienteId, onBack }: PerfilClienteScreenProps) {
+export default function PerfilClienteScreen({ clienteId, onBack, onLogout }: PerfilClienteScreenProps) {
   const [perfil, setPerfil] = useState<PerfilClienteResponse | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(false);
@@ -34,7 +35,7 @@ export default function PerfilClienteScreen({ clienteId, onBack }: PerfilCliente
   const [modalValidarVisible, setModalValidarVisible] = useState(false);
   const [historialExpandido, setHistorialExpandido] = useState(false);
   const contactScale = useRef(new Animated.Value(1)).current;
-  const { rol } = useRol();
+  const isBarbero = useIsBarbero();
 
   const cargarPerfil = () => {
     setIsLoading(true);
@@ -61,12 +62,14 @@ export default function PerfilClienteScreen({ clienteId, onBack }: PerfilCliente
     return (
       <View style={styles.centered}>
         <Text style={styles.errorText}>No se pudo cargar el perfil</Text>
-        <TouchableOpacity style={styles.navBtn} onPress={onBack} activeOpacity={0.7}>
-          <View style={styles.navBtnInner}>
-            <ArrowLeft size={16} color={colors.onSurface} strokeWidth={1.5} />
-            <Text style={styles.navBtnText}>Volver</Text>
-          </View>
-        </TouchableOpacity>
+        {onBack && (
+          <TouchableOpacity style={styles.navBtn} onPress={onBack} activeOpacity={0.7}>
+            <View style={styles.navBtnInner}>
+              <ArrowLeft size={16} color={colors.onSurface} strokeWidth={1.5} />
+              <Text style={styles.navBtnText}>Volver</Text>
+            </View>
+          </TouchableOpacity>
+        )}
       </View>
     );
   }
@@ -74,6 +77,14 @@ export default function PerfilClienteScreen({ clienteId, onBack }: PerfilCliente
   const formatFecha = (iso: string) => {
     const d = new Date(iso);
     return `${d.getDate().toString().padStart(2, '0')}/${(d.getMonth() + 1).toString().padStart(2, '0')}/${d.getFullYear()}`;
+  };
+
+  const formatMiembroDesde = (iso: string | null) => {
+    if (!iso) return '-';
+    const meses = ['enero', 'febrero', 'marzo', 'abril', 'mayo', 'junio',
+                   'julio', 'agosto', 'septiembre', 'octubre', 'noviembre', 'diciembre'];
+    const [year, month] = iso.split('-').map(Number);
+    return `${meses[month - 1]} ${year}`;
   };
 
   const nameParts = perfil.nombre.split(' ');
@@ -92,20 +103,26 @@ export default function PerfilClienteScreen({ clienteId, onBack }: PerfilCliente
     });
   };
 
-  // TODO: Usar rol real del usuario autenticado
-  const isBarbero = rol === 'barbero';
-
   return (
     <View style={styles.screen}>
       <ScrollView contentContainerStyle={styles.content} showsVerticalScrollIndicator={false}>
 
         {/* ── Navigation ── */}
-        <TouchableOpacity style={styles.navBtn} onPress={onBack} activeOpacity={0.7}>
-          <View style={styles.navBtnInner}>
-            <ArrowLeft size={16} color={colors.onSurface} strokeWidth={1.5} />
-            <Text style={styles.navBtnText}>Volver</Text>
-          </View>
-        </TouchableOpacity>
+        {isBarbero ? (
+          <TouchableOpacity style={styles.navBtn} onPress={onBack} activeOpacity={0.7}>
+            <View style={styles.navBtnInner}>
+              <ArrowLeft size={16} color={colors.onSurface} strokeWidth={1.5} />
+              <Text style={styles.navBtnText}>Volver</Text>
+            </View>
+          </TouchableOpacity>
+        ) : (
+          <TouchableOpacity style={[styles.navBtn, styles.navBtnRight]} onPress={onLogout} activeOpacity={0.7}>
+            <View style={styles.navBtnInner}>
+              <LogOut size={16} color={colors.onSurface} strokeWidth={1.5} />
+              <Text style={styles.navBtnText}>Salir</Text>
+            </View>
+          </TouchableOpacity>
+        )}
 
         {/* ════════════════════════════════════════
             HERO — Editorial asymmetric layout
@@ -127,11 +144,11 @@ export default function PerfilClienteScreen({ clienteId, onBack }: PerfilCliente
             <View style={styles.metaDivider} />
             <View style={styles.metaBlock}>
               <Text style={styles.metaLabel}>MIEMBRO DESDE</Text>
-              <Text style={styles.metaValue}>2024</Text>
+              <Text style={styles.metaValue}>{formatMiembroDesde(perfil.fechaRegistro)}</Text>
             </View>
           </View>
 
-          {/* TODO: Mostrar solo cuando el rol sea 'barbero' (actualmente hardcodeado) */}
+          
           {isBarbero && (
             <View style={styles.barberóActions}>
               <TouchableOpacity
@@ -382,6 +399,9 @@ const styles = StyleSheet.create({
   },
 
   /* ── Navigation ── */
+  navBtnRight: {
+    alignSelf: 'flex-end',
+  },
   navBtn: {
     alignSelf: 'flex-start',
     paddingVertical: spacing.sm,

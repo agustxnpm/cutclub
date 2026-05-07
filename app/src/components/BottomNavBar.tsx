@@ -10,13 +10,16 @@ interface BottomNavBarProps {
   onTabPress: (tab: TabKey) => void;
   /** 'login' cuando el barbero no tiene sesión de cliente activa; 'logout' cuando hay un cliente logueado */
   cuentaVariant: 'login' | 'logout';
+  /** Mostrar el tab de directorio de clientes (solo para BARBERO) */
+  showClientsTab?: boolean;
 }
 
-export default function BottomNavBar({ activeTab, onTabPress, cuentaVariant }: BottomNavBarProps) {
-  const tabs: { key: TabKey; label: string; Icon: React.ComponentType<{ size: number; color: string; strokeWidth: number }> }[] = [
+export default function BottomNavBar({ activeTab, onTabPress, cuentaVariant, showClientsTab = true }: BottomNavBarProps) {
+  const allTabs: { key: TabKey; label: string; Icon: React.ComponentType<{ size: number; color: string; strokeWidth: number }> }[] = [
     { key: 'clients', label: 'CLIENTES', Icon: Users },
     { key: 'cuenta',  label: cuentaVariant === 'logout' ? 'SALIR' : 'CUENTA', Icon: cuentaVariant === 'logout' ? LogOut : LogIn },
   ];
+  const tabs = showClientsTab ? allTabs : allTabs.filter(t => t.key !== 'clients');
 
   return (
     <View style={styles.container}>
