@@ -4,6 +4,7 @@ import com.cutclub.api.application.service.ValidarReferidoUseCase;
 import com.cutclub.api.infrastructure.web.dto.ValidarReferidoRequest;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -38,6 +39,7 @@ public class ReferidoController {
      * @return 204 No Content si la validación se procesa correctamente
      */
     @PatchMapping("/{id}/validar")
+    @PreAuthorize("hasRole('BARBERO')")
     public ResponseEntity<Void> validar(@PathVariable UUID id,
                                         @RequestBody @Valid ValidarReferidoRequest request) {
         validarReferidoUseCase.validar(id, request.esNuevoReal());

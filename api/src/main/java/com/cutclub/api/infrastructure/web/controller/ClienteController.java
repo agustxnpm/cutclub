@@ -12,6 +12,7 @@ import com.cutclub.api.infrastructure.web.mapper.ClienteResponseMapper;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -37,6 +38,7 @@ public class ClienteController {
     }
 
     @PostMapping
+    @PreAuthorize("hasRole('BARBERO')")
     public ResponseEntity<ClienteResponse> registrarCliente(@Valid @RequestBody RegistrarClienteRequest request) {
         Cliente cliente = registrarClienteNuevoService.registrarCliente(
                 request.nombre(),
@@ -46,6 +48,7 @@ public class ClienteController {
     }
 
     @GetMapping
+    @PreAuthorize("hasRole('BARBERO')")
     public ResponseEntity<List<ClienteResponse>> listarClientes() {
         List<ClienteResponse> clientes = buscarClientesUseCase.listar().stream()
                 .map(responseMapper::toResponse)
@@ -54,6 +57,7 @@ public class ClienteController {
     }
 
     @GetMapping("/buscar")
+    @PreAuthorize("hasRole('BARBERO')")
     public ResponseEntity<?> buscarClientes(@RequestParam(required = false) String query) {
         if (query == null || query.isBlank()) {
             return ResponseEntity.badRequest()
@@ -68,6 +72,7 @@ public class ClienteController {
     }
 
     @GetMapping("/{id}/perfil")
+    @PreAuthorize("hasRole('BARBERO') or @clienteSecurityService.esPropio(authentication, #id)")
     public ResponseEntity<PerfilClienteResponse> obtenerPerfil(@PathVariable String id) {
         PerfilClienteResult resultado = obtenerPerfilClienteUseCase.obtener(id);
         return ResponseEntity.ok(responseMapper.toResponse(

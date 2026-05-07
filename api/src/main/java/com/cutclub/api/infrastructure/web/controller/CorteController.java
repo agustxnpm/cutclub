@@ -8,6 +8,7 @@ import com.cutclub.api.infrastructure.web.dto.RegistrarCorteRequest;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -29,6 +30,7 @@ public class CorteController {
     }
 
     @PostMapping
+    @PreAuthorize("hasRole('BARBERO')")
     public ResponseEntity<Map<String, String>> registrarCorte(@Valid @RequestBody RegistrarCorteRequest request) {
         Corte corte = registrarCorteUseCase.ejecutar(
                 request.clienteId(),
@@ -40,6 +42,7 @@ public class CorteController {
     }
 
     @PostMapping("/canje")
+    @PreAuthorize("hasRole('BARBERO')")
     public ResponseEntity<Map<String, String>> canjearCorteGratis(@Valid @RequestBody CanjearCorteGratisRequest request) {
         Corte corte = canjearCorteGratisUseCase.ejecutar(
                 request.clienteId(),
